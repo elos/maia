@@ -1,0 +1,15 @@
+# Ignore any t.rb task lists
+.tasks.json
+
+# Ignore any Vim artifacts
+*~
+*.swp
+
+# Ignore any Ctags artifacts
+tags
+
+# Ignore any node modules
+node_modules/*
+
+# Ignore any client build artifacts
+build/*

@@ -16,7 +16,7 @@ var Dispatcher = require("./dispatcher/app-dispatcher");
 require("./stores/log-store");
 require("./stores/tick-store");
 
-var Home = require("./components/account_details");
+var Root = require("./components/root");
 
 Dispatcher.dispatch({
     actionType: Constants.APP_INITIALIZED
@@ -26,6 +26,6 @@ Dispatcher.dispatch({
  * Initialize React Below
  */
 ReactDOM.render(
-    <Home />,
+    <Root />,
     document.getElementById("react-app")
 )

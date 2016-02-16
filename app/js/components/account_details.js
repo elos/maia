@@ -10,7 +10,8 @@ var React = require("react");
  */
 var Logger = require("../utils/logger");
 var ConfigStore = require("../stores/config-store");
-var ConfigActionCreators = require("../action-creators/config-action-creators");
+var ConfigActionCreators = require("../action-creators/config-action-creator");
+var RouteActionCreator = require("../action-creators/route-action-creator");
 
 /*
  * "Private" variables and functions can go here
@@ -60,6 +61,10 @@ var AccountDetails = React.createClass({
                 this.state.privateCredential);
     },
 
+    gotoCLI: function () {
+
+    },
+
     /*
      * Called every time the state changes
      */
@@ -78,6 +83,12 @@ var AccountDetails = React.createClass({
                 <input type="submit"
                        value="Save (Cookies)...lol"
                        onClick={this.saveCredentials}/>
+                <br/><br/>
+                <br/><br/>
+                <input type="submit"
+                       value="CLI"
+                       onClick={RouteActionCreator.ShowCLI}
+                       />
             </div>
         );
     },

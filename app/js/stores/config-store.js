@@ -19,11 +19,29 @@ var Cookies = require("../utils/cookies");
 var PublicCredentialKey = "public-credential";
 var PrivateCredentialKey = "private-credential";
 
+var ConfigStoreEvents = {
+    Changed: "changed"
+};
+
 /*
  * ConfigStore
  *  - Stores elos user config
  */
 var ConfigStore = assign({}, EventEmitter.prototype, {
+    // --- Eventing {{{
+    emitChange: function () {
+        this.emit(ConfigStoreEvents.Changed);
+    },
+
+    addChangeListener: function (callback) {
+        this.on(ConfigStoreEvents.Changed, callback);
+    },
+
+    removeChangeListener: function (callback) {
+        this.removeListener(ConfigStoreEvents.Changed, callback);
+    },
+    // --- }}}
+
     getPublicCredential: function () {
         var stored = Cookies.get(PublicCredentialKey);
 
@@ -44,18 +62,19 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
         return stored;
     },
 
-    setPublicCredential: function (cred) {
+    _setPublicCredential: function (cred) {
         Cookies.set(PublicCredentialKey, cred);
     },
 
-    setPrivateCredential: function (cred) {
+    _setPrivateCredential: function (cred) {
         Cookies.set(PrivateCredentialKey, cred);
     },
 
     setCredentials: function (pubCred, priCred) {
         Logger.info("ConfigStore: setting credentials");
-        this.setPublicCredential(pubCred);
-        this.setPrivateCredential(priCred);
+        this._setPublicCredential(pubCred);
+        this._setPrivateCredential(priCred);
+        this.emitChange();
     }
 
 });
@@ -64,7 +83,6 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
  * Register all event callbacks
  */
 AppDispatcher.register(function (action) {
-    Logger.info(action);
     switch (action.actionType) {
         case AppConstants.CONFIG_UPDATE:
             ConfigStore.setCredentials(action.data.publicCredential,

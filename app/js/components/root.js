@@ -15,6 +15,7 @@ var RouteConstants = require("../constants/route-constants");
 var AccountDetails = require("../components/account_details");
 var Home = require("../components/home");
 var CLI = require("../components/cli");
+var Header = require("../components/header");
 var Logger = require("../utils/logger");
 
 /*
@@ -53,12 +54,6 @@ var Root = React.createClass({
      * Called every time the state changes
      */
     render: function () {
-        var displayText = "All Done";
-
-        if (this.state.ticksRemaining > 0) {
-            displayText = this.state.ticksRemaining;
-        }
-
         var Component;
         switch (this.state.currentRoute) {
             case RouteConstants.CLI:
@@ -74,7 +69,7 @@ var Root = React.createClass({
 
         return (
                 <div>
-                <div className="header"> <div className="logo"> ELOS </div> </div>
+                <Header />
                 <Component />
                 </div>
                )

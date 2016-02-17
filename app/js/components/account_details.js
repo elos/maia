@@ -61,10 +61,6 @@ var AccountDetails = React.createClass({
                 this.state.privateCredential);
     },
 
-    gotoCLI: function () {
-
-    },
-
     /*
      * Called every time the state changes
      */
@@ -81,14 +77,8 @@ var AccountDetails = React.createClass({
                        onChange={this.changePrivateCredential} />
                 <br/><br/>
                 <input type="submit"
-                       value="Save (Cookies)...lol"
+                       value="Save"
                        onClick={this.saveCredentials}/>
-                <br/><br/>
-                <br/><br/>
-                <input type="submit"
-                       value="CLI"
-                       onClick={RouteActionCreator.ShowCLI}
-                       />
             </div>
         );
     },

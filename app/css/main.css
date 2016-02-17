@@ -14,16 +14,78 @@
 
 body {
     background: #FCFCFC;
+    margin: 0;
 }
 
 .header {
     height: 30px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+    padding: 4px;
 }
 
 .logo {
+    margin-left: 1em;
     font-size: .8em;
     font-family: Avenir Next UltraLight;
 }
+
+.tabs {
+    margin-right: 1em;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.tab, .tab-selected {
+    color: grey;
+    border: 1px solid grey;
+    border-radius: 3px;
+    font-family: Avenir Next Regular;
+    font-size: .5em;
+    cursor: pointer;
+    margin: 2px 5px;
+    padding: 3px 5px;
+}
+
+.tab:hover, .tab-selected:hover {
+    border: 1px solid #18FFFF;
+}
+
+.tab-selected {
+    color: #18FFFF;
+    border: 1px solid #18FFFF;
+    font-family: Avenir Next Medium;
+}
+
+.cli {
+    /* box-shadow: inset 0px 0px 9px 0px rgba(0,0,0,0.25); */
+}
+
+.card {
+    background: white;
+    box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.25);
+    padding: 10px;
+}
+
+input[type=text], input[type=password] {
+    background-color: #FCFCFC;
+    border: 1px solid grey;
+    margin: 0;
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-size: .85em;
+}
+
+input[type=submit] {
+    background: none;
+    border: 1px solid #18FFFF;
+    color: #18FFFF;
+    border-radius: 4px;
+    outline: none;
+    font-size: .85em;
+    padding: 6px 8px;
+    cursor: pointer;
+}
+

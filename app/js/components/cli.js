@@ -51,6 +51,9 @@ var CLI = React.createClass({
 
     submitInput: function () {
         CLIActionCreator.input(this.state.input);
+        this.setState({
+            input: ""
+        });
     },
 
     inputKeyPress: function (event) {
@@ -64,7 +67,7 @@ var CLI = React.createClass({
      */
     render: function () {
         return (
-            <div>
+            <div className="cli">
                 <ul className="card">
                     {this.state.history.map(function(string, i) {
                         return <li key={i}> {string} </li>
@@ -74,14 +77,6 @@ var CLI = React.createClass({
                        value={this.state.input}
                        onChange={this.changeInput}
                        onKeyPress={this.inputKeyPress} />
-                <input type="submit"
-                       value="Send"
-                       onClick={this.submitInput} />
-                <br /><br /><br />
-                <input type="submit"
-                       value="Account"
-                       onClick={RouteActionCreator.ShowAccountDetails}
-                       />
            </div>
         );
     },

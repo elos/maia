@@ -45,7 +45,7 @@ var CLIStore = assign({}, EventEmitter.prototype, {
     },
 
     _onMessage: function (event) {
-        CLIStore.pushHistory(event.data);
+        CLIStore.pushHistory(event.data.replace(/\n/g, "<br />"));
     },
 
     _onClose: function () {

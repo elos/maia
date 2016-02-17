@@ -15,6 +15,7 @@ var RouteConstants = require("../constants/route-constants");
 var AccountDetails = require("../components/account_details");
 var Home = require("../components/home");
 var CLI = require("../components/cli");
+var Logger = require("../utils/logger");
 
 /*
  * "Private" variables and functions can go here
@@ -58,20 +59,25 @@ var Root = React.createClass({
             displayText = this.state.ticksRemaining;
         }
 
+        var Component;
         switch (this.state.currentRoute) {
             case RouteConstants.CLI:
-                return (
-                        <CLI />
-                );
+                Component = CLI;
+                break;
             case RouteConstants.AccountDetails:
-                return (
-                        <AccountDetails />
-                );
+                Component = AccountDetails;
+                break;
             default:
-                return (
-                        <Home />
-                );
+                Component = Home;
+                break;
         }
+
+        return (
+                <div>
+                <div className="header"> <div className="logo"> ELOS </div> </div>
+                <Component />
+                </div>
+               )
     },
 
     /*

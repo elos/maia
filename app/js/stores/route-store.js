@@ -22,8 +22,8 @@ var RouteStoreEvents = {
 };
 
 /*
- * ConfigStore
- *  - Stores elos user config
+ * RouteStore
+ *  - Stores current routing info
  */
 var RouteStore = assign({}, EventEmitter.prototype, {
     // --- Eventing {{{
@@ -40,6 +40,18 @@ var RouteStore = assign({}, EventEmitter.prototype, {
     },
     // --- }}}
 
+    initialize: function () {
+        Logger.info("init");
+        var hash = window.location.hash;
+        if (hash.length === 0) {
+            this.changeRouteTo(RouteConstants.CLI);
+            return;
+        }
+
+        hash = hash.substring(3, hash.length);
+        this.changeRouteTo(hash);
+    },
+
     _route: RouteConstants.CLI,
 
     getCurrentRoute: function() {
@@ -47,6 +59,7 @@ var RouteStore = assign({}, EventEmitter.prototype, {
     },
 
     changeRouteTo: function(r) {
+        window.history.pushState("", r, "/#!/" + r);
         this._route = r;
         this.emitChange();
     }
@@ -56,8 +69,10 @@ var RouteStore = assign({}, EventEmitter.prototype, {
  * Register all event callbacks
  */
 AppDispatcher.register(function (action) {
-    Logger.info(action);
     switch (action.actionType) {
+        case AppConstants.APP_INITIALIZED:
+            RouteStore.initialize();
+            break;
         case AppConstants.ROUTE_CHANGE:
             RouteStore.changeRouteTo(action.data.newRoute);
             break;

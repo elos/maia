@@ -197,8 +197,6 @@ var RecordStore = assign({}, EventEmitter.prototype, {
         var bucket = RecordStore.records[kind];
             var id;
 
-        Logger.info(bucket);
-
         if (bucket === undefined) {
             return records;
         }
@@ -247,21 +245,15 @@ var RecordStore = assign({}, EventEmitter.prototype, {
         Logger.info("RecordStore._post");
         var xhr = new XMLHttpRequest();
         url = RecordStore._encode(url, params);
-        Logger.info(url);
-        Logger.info("public" + RecordStore.username);
-        Logger.info("priv " + RecordStore.password);
         xhr.open("POST", url, true, RecordStore.username, RecordStore.password);
         xhr.setRequestHeader("Authorization", "Basic " + Base64.encode(RecordStore.username + ":" + RecordStore.password));
-        Logger.info(xhr);
         //xhr.setRequestHeader("Content-type", "application/json");
         xhr.onreadystatechange = function () {
-            Logger.info("on ready state change");
             if (xhr.readyState === 4) {
                 callback(xhr.status, xhr.responseText);
             }
         };
         xhr.send(JSON.stringify(data));
-        Logger.info("send");
     },
 
     _delete: function(url, params, callback) {
@@ -373,8 +365,6 @@ var RecordStore = assign({}, EventEmitter.prototype, {
                         RecordStore.records[kind] = {};
                     }
 
-                    Logger.info(results);
-
                     for (i = 0; i < results.length; i++) {
                         RecordStore.records[kind][results[i].id] = RecordStore._merge(RecordStore.records[kind][results[i].id] || {}, results[i]);
                     }
@@ -387,20 +377,22 @@ var RecordStore = assign({}, EventEmitter.prototype, {
 /*
  * Register all event callbacks
  */
-AppDispatcher.register(function (action) {
+RecordStore.dispatchToken = AppDispatcher.register(function (action) {
     switch (action.actionType) {
+        case AppConstants.APP_INITIALIZED:
+            AppDispatcher.waitFor([ConfigStore.dispatchToken]);
+            RecordStore.initialize();
+            break;
         case AppConstants.RECORD_GET:
             RecordStore._find(action.data.kind, action.data.id);
             break;
         case AppConstants.RECORD_UPDATE:
-            Logger.info("UPDATE");
             RecordStore._save(action.data.kind, action.data.record);
             break;
         case AppConstants.RECORD_DELETE:
             RecordStore._remove(action.data.kind, action.data.record);
             break;
         case AppConstants.RECORD_QUERY:
-            Logger.info("SEEN RECORD QUERY");
             RecordStore._query(action.data.kind, action.data.attrs);
             break;
         default:
@@ -410,7 +402,5 @@ AppDispatcher.register(function (action) {
             break;
     }
 });
-
-RecordStore.initialize();
 
 module.exports = RecordStore;

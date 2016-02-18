@@ -82,7 +82,7 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
 /*
  * Register all event callbacks
  */
-AppDispatcher.register(function (action) {
+ConfigStore.dispatchToken = AppDispatcher.register(function (action) {
     switch (action.actionType) {
         case AppConstants.CONFIG_UPDATE:
             ConfigStore.setCredentials(action.data.publicCredential,

@@ -31,19 +31,16 @@ var TodosStore = assign({}, EventEmitter.prototype, {
     },
 
     initialize: function () {
-        Logger.info("initialize");
         RecordStore.addChangeListener(this._recordChange);
         this.refresh();
     },
 
     refresh: function () {
-        RecordActionCreators.query("task", {});
+        RecordStore._query("task", {});
     },
 
     _recordChange: function () {
-        Logger.info("record changed in TodossTore");
         TodosStore.todos = RecordStore.getAll("task");
-        Logger.info(TodosStore.todos);
         TodosStore.emitChange();
     },
 
@@ -60,7 +57,6 @@ var TodosStore = assign({}, EventEmitter.prototype, {
     },
 
     _completeTask: function(id) {
-        Logger.info(id);
         var existing = RecordStore.records.task[id];
         existing.completed_at = new Date();
         RecordStore._save("task", existing);
@@ -72,6 +68,10 @@ var TodosStore = assign({}, EventEmitter.prototype, {
  */
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
+      case AppConstants.APP_INITIALIZED:
+          AppDispatcher.waitFor([RecordStore.dispatchToken]);
+        TodosStore.initialize();
+        break;
       case AppConstants.TODOS_COMPLETE:
         TodosStore._completeTask(action.data.task_id);
         break;
@@ -82,7 +82,5 @@ AppDispatcher.register(function (action) {
       break;
   }
 });
-
-TodosStore.initialize();
 
 module.exports = TodosStore;

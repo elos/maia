@@ -24,6 +24,7 @@ var CLI = React.createClass({
      */
     componentDidMount: function () {
         CLIStore.addChangeListener(this._onNewChange);
+        //componentHandler.upgradeDom(); // mdl
     },
 
     /*
@@ -36,7 +37,13 @@ var CLI = React.createClass({
     /*
      * Called when the compoenent's changes are flushed to the DOM
      */
-    //componentDidUpdate: function() { // This upgrades all upgradable components (i.e. with 'mdl-js-*' class) },
+    componentDidUpdate: function() {
+        // This upgrades all upgradable components (i.e. with 'mdl-js-*' class)
+        //componentHandler.upgradeDom(); // mdl
+
+        var element = document.getElementById("cli-output-box");
+        element.scrollTop = element.scrollHeight;
+    },
 
     /*
      * Called once before componentDidMount to set the initial component state.
@@ -71,24 +78,38 @@ var CLI = React.createClass({
      * Called every time the state changes
      */
     render: function () {
+        var text = "";
+        var CLI = this;
+        var i;
+        for (i = this.state.history.length -1; i >= 0; i--) {
+            text = this.state.history[i] + text;
+            if (i !== 0) {
+                text = "\n" + text;
+            }
+        }
+
         return (
             <div className="cli">
-                <ul className="card">
-                    {this.state.history.map(function(string, i) {
-                        return <li key={i}> {string} </li>
-                    })}
-                </ul>
-                <i className="material-icons">keyboard_arrow_right</i>
-                <div className="mdl-textfield mdl-js-textfield">
-                    <input className="mdl-textfield__input"
-                        type="text"
-                        id="publicCredential"
-                        value={this.state.input}
-                        onChange={this.changeInput}
-                        onKeyPress={this.inputKeyPress} />
-                    <label className="mdl-textfield__label" for="publicCredential">Input command...</label>
+                <div className="todos-title">
+                    <h2 className="todos-title-text"> CLI </h2>
                 </div>
-           </div>
+                <div className="card">
+                    <div className="cli-output" id="cli-output-box">
+                        {text}
+                    </div>
+                    <div className="cli-input">
+                        <i className="material-icons cli-input-icon">keyboard_arrow_right</i>
+                        <div className="mdl-textfield mdl-js-textfield cli-input-text-container">
+                            <input className="cli-input-text-field mdl-textfield__input"
+                                type="text"
+                                id="publicCredential"
+                                value={this.state.input}
+                                onChange={this.changeInput}
+                                onKeyPress={this.inputKeyPress} />
+                        </div>
+                    </div>
+               </div>
+            </div>
         );
     },
 

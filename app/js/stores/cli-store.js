@@ -90,7 +90,7 @@ var CLIStore = assign({}, EventEmitter.prototype, {
             this.ws.send(input);
         }
 
-        this.pushHistory(input)
+        this.pushHistory("› " + input);
     },
 
     getHistory: function () {

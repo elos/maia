@@ -25,7 +25,6 @@ var Todos = React.createClass({
      * Called once when the component is mounted
      */
     componentDidMount: function () {
-        Logger.info("MONTH");
         TodosStore.addChangeListener(this._onNewChange);
         componentHandler.upgradeDom(); // mdl
     },

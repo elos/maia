@@ -12,11 +12,11 @@ var React = require("react");
 var RouteStore = require("../stores/route-store");
 var RouteConstants = require("../constants/route-constants");
 
-var AccountDetails = require("../components/account_details");
-var Home = require("../components/home");
-var CLI = require("../components/cli");
-var Header = require("../components/header");
 var Logger = require("../utils/logger");
+
+var Header = require("../components/header");
+var CLI = require("../components/cli");
+var AccountDetails = require("../components/account_details");
 var Todos = require("../components/todos");
 
 /*
@@ -24,7 +24,6 @@ var Todos = require("../components/todos");
  */
 
 var Root = React.createClass({
-
     /*
      * Called once when the component is mounted
      */
@@ -56,6 +55,7 @@ var Root = React.createClass({
      */
     render: function () {
         var Component;
+
         switch (this.state.currentRoute) {
             case RouteConstants.CLI:
                 Component = CLI;
@@ -67,7 +67,7 @@ var Root = React.createClass({
                 Component = Todos;
                 break;
             default:
-                Component = Home;
+                Component = CLI;
                 break;
         }
 

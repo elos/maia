@@ -59,13 +59,6 @@ body {
     font-family: Avenir Next Medium;
 }
 
-.cli {
-    position: absolute;
-    margin-top: 0;
-    width: 70%;
-    margin-left: 15%;
-    /* box-shadow: inset 0px 0px 9px 0px rgba(0,0,0,0.25); */
-}
 
 .card {
     background: white;
@@ -115,4 +108,46 @@ input[type=submit] {
     line-height: 1em;
     margin: 10px auto;
     font-family: Avenir Next Regular;
+}
+
+.cli {
+    width: 70%;
+    margin-left: 15%;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.cli-output {
+    box-shadow: inset 0px 0px 9px 0px rgba(0,0,0,0.25);
+    max-height: 300px;
+    overflow: scroll;
+    padding: 3px;
+    font-size: .7em;
+    line-height: 1.2em;
+    white-space: pre-wrap;
+    font-family: monospace;
+}
+
+.cli-input {
+    border-top: 1px solid #CCCCCC;
+    margin-top: 5px;
+    display: flex;
+    height: 40px;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 0;
+}
+
+.cli-input-icon {
+    font-size: 17px;
+}
+
+.cli-input-text-container {
+    width: 100% !important;
+}
+
+.cli-input-text-field {
+    width: 100%;
 }

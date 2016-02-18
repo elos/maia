@@ -9,8 +9,11 @@ var RouteActionCreators = {
 
     ShowCLI: function () {
         RouteActions.changeTo(Routes.CLI);
-    }
+    },
 
+    ShowTodos: function () {
+        RouteActions.changeTo(Routes.Todos);
+    }
 };
 
 module.exports = RouteActionCreators;

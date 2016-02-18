@@ -46,20 +46,24 @@ body {
     font-size: .5em;
     cursor: pointer;
     margin: 2px 5px;
-    padding: 3px 5px;
+    padding: 3px 10px;
 }
 
 .tab:hover, .tab-selected:hover {
-    border: 1px solid #18FFFF;
+    border: 1px solid #326dff;
 }
 
 .tab-selected {
-    color: #18FFFF;
-    border: 1px solid #18FFFF;
+    color: #326dff;
+    border: 1px solid #326dff;
     font-family: Avenir Next Medium;
 }
 
 .cli {
+    position: absolute;
+    margin-top: 0;
+    width: 70%;
+    margin-left: 15%;
     /* box-shadow: inset 0px 0px 9px 0px rgba(0,0,0,0.25); */
 }
 
@@ -69,6 +73,7 @@ body {
     padding: 10px;
 }
 
+/*
 input[type=text], input[type=password] {
     background-color: #FCFCFC;
     border: 1px solid grey;
@@ -77,15 +82,37 @@ input[type=text], input[type=password] {
     border-radius: 4px;
     font-size: .85em;
 }
+*/
 
 input[type=submit] {
-    background: none;
-    border: 1px solid #18FFFF;
-    color: #18FFFF;
-    border-radius: 4px;
-    outline: none;
-    font-size: .85em;
-    padding: 6px 8px;
-    cursor: pointer;
+/*    font-family: Avenir Next Regular; */
 }
 
+
+.account-details {
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.todos {
+    margin: auto;
+    padding: 20px;
+    width: 80%;
+}
+
+.todos-table {
+    width: 100%;
+}
+
+.todos-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.todos-title-text {
+    font-size: 1em;
+    line-height: 1em;
+    margin: 10px auto;
+    font-family: Avenir Next Regular;
+}

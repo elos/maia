@@ -23,6 +23,7 @@ var AccountDetails = React.createClass({
      * Called once when the component is mounted
      */
     componentDidMount: function () {
+        componentHandler.upgradeDom(); // mdl
         Logger.info("account details mount");
     },
 
@@ -30,6 +31,14 @@ var AccountDetails = React.createClass({
      * Called once when the component is unmounted
      */
     //componentWillUnmount: function () {},
+
+    /*
+     * Called when the compoenent's changes are flushed to the DOM
+     */
+    componentDidUpdate: function() {
+        // This upgrades all upgradable components (i.e. with 'mdl-js-*' class)
+        componentHandler.upgradeDom(); // mdl
+    },
 
     /*
      * Called once before componentDidMount to set the initial component state.
@@ -66,19 +75,32 @@ var AccountDetails = React.createClass({
      */
     render: function () {
         return (
-            <div className="card">
-                <p> Public Credential </p>
-                <input type="text"
-                       value={this.state.publicCredential}
-                       onChange={this.changePublicCredential} />
-                <p> Private Credential </p>
-                <input type="password"
-                       value={this.state.privateCredential}
-                       onChange={this.changePrivateCredential} />
-                <br/><br/>
-                <input type="submit"
-                       value="Save"
-                       onClick={this.saveCredentials}/>
+            <div className="account-details mdl-card mdl-shadow--2dp">
+                <div className="mdl-card__title">
+                    <h2 className="mdl-card__title-text">Account Details</h2>
+                </div>
+                <form action="#">
+                    <div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input className="mdl-textfield__input"
+                            type="text"
+                            id="publicCredential"
+                            value={this.state.publicCredential}
+                            onChange={this.changePublicCredential} />
+                        <label className="mdl-textfield__label" for="publicCredential">Public Credential...</label>
+                    </div>
+                    <br />
+                    <div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input className="mdl-textfield__input"
+                            type="text" id="privateCredential"
+                            value={this.state.privateCredential}
+                            onChange={this.changePrivateCredential} />
+                        <label className="mdl-textfield__label" for="privateCredenetial">Private Credential...</label>
+                    </div>
+                </form>
+                <button className="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+                        onClick={this.saveCredentials}>
+                  Save
+                </button>
             </div>
         );
     },

@@ -41,15 +41,20 @@ var CLIStore = assign({}, EventEmitter.prototype, {
     },
 
     _configChange: function () {
-        this._attemptConnection(ConfigStore.getPublicCredential(), ConfigStore.getPrivateCredential());
+        CLIStore._attemptConnection(ConfigStore.getPublicCredential(), ConfigStore.getPrivateCredential());
     },
 
     _onMessage: function (event) {
-        CLIStore.pushHistory(event.data.replace(/\n/g, "<br />"));
+        CLIStore.pushHistory(event.data);
     },
 
     _onClose: function () {
         this.ws = null;
+    },
+
+    _onOpen: function () {
+        Logger.info("Websocket opened");
+        CLIStore.pushHistory("Welcome to elos");
     },
 
     _attemptConnection: function (publicCred, privateCred) {
@@ -60,8 +65,8 @@ var CLIStore = assign({}, EventEmitter.prototype, {
 
         this.ws = new WebSocket(url);
         this.ws.onmessage = this._onMessage;
+        this.ws.onopen = this._onOpen;
         this.ws.onclose = this._onClose;
-        Logger.info("Websocket opened");
     },
 
 

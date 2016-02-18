@@ -34,6 +34,11 @@ var CLI = React.createClass({
     },
 
     /*
+     * Called when the compoenent's changes are flushed to the DOM
+     */
+    //componentDidUpdate: function() { // This upgrades all upgradable components (i.e. with 'mdl-js-*' class) },
+
+    /*
      * Called once before componentDidMount to set the initial component state.
      */
     getInitialState: function () {
@@ -73,10 +78,16 @@ var CLI = React.createClass({
                         return <li key={i}> {string} </li>
                     })}
                 </ul>
-                <input type="text"
-                       value={this.state.input}
-                       onChange={this.changeInput}
-                       onKeyPress={this.inputKeyPress} />
+                <i className="material-icons">keyboard_arrow_right</i>
+                <div className="mdl-textfield mdl-js-textfield">
+                    <input className="mdl-textfield__input"
+                        type="text"
+                        id="publicCredential"
+                        value={this.state.input}
+                        onChange={this.changeInput}
+                        onKeyPress={this.inputKeyPress} />
+                    <label className="mdl-textfield__label" for="publicCredential">Input command...</label>
+                </div>
            </div>
         );
     },

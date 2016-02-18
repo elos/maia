@@ -17,6 +17,7 @@ var Home = require("../components/home");
 var CLI = require("../components/cli");
 var Header = require("../components/header");
 var Logger = require("../utils/logger");
+var Todos = require("../components/todos");
 
 /*
  * "Private" variables and functions can go here
@@ -62,13 +63,16 @@ var Root = React.createClass({
             case RouteConstants.AccountDetails:
                 Component = AccountDetails;
                 break;
+            case RouteConstants.Todos:
+                Component = Todos;
+                break;
             default:
                 Component = Home;
                 break;
         }
 
         return (
-                <div>
+                <div class="root">
                 <Header />
                 <Component />
                 </div>

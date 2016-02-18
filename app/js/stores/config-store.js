@@ -91,5 +91,6 @@ AppDispatcher.register(function (action) {
     }
 });
 
+ConfigStore.emitChange();
 
 module.exports = ConfigStore;

@@ -50,6 +50,9 @@ var Header = React.createClass({
             case RouteConstants.CLI:
                 RouteActionCreator.ShowCLI();
                 break;
+            case RouteConstants.Todos:
+                RouteActionCreator.ShowTodos();
+                break;
         }
     },
 
@@ -57,7 +60,7 @@ var Header = React.createClass({
      * Called every time the state changes
      */
     render: function () {
-        var tabs = ['CLI', 'Account'];
+        var tabs = ['CLI', 'Todos', 'Account'];
         var classes = tabs.map(this._isSelected);
         var header = this;
 
@@ -87,6 +90,7 @@ var Header = React.createClass({
     _TabNames: {
         "Account": RouteConstants.AccountDetails,
         "CLI": RouteConstants.CLI,
+        "Todos": RouteConstants.Todos,
     },
 
     _isSelected: function(tabName) {

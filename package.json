@@ -1,13 +1,16 @@
 {
-  "name": "react-flux-seed",
-  "version": "1.0.0",
+  "name": "maia",
+  "version": "0.3.0",
   "description": "A ReactJS and Flux demonstration.",
   "main": "Gulpfile.js",
+  "repository": "https://github.com/elos/maia",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "Corey Prophitt",
   "license": "MIT",
+  "devDependencies": {
+  },
   "dependencies": {
     "browserify": "^12.0.1",
     "flux": "^2.1.1",

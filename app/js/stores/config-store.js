@@ -9,8 +9,6 @@ var assign = require("object-assign");
  */
 var AppDispatcher = require("../dispatcher/app-dispatcher");
 var AppConstants = require("../constants/app-constants");
-
-var Logger = require("../utils/logger");
 var Cookies = require("../utils/cookies");
 
 /*
@@ -18,17 +16,16 @@ var Cookies = require("../utils/cookies");
  */
 var PublicCredentialKey = "public-credential";
 var PrivateCredentialKey = "private-credential";
-
 var ConfigStoreEvents = {
     Changed: "changed"
 };
 
 /*
- * ConfigStore
- *  - Stores elos user config
+ * ConfigStore: stores and manages elos user configuration
  */
 var ConfigStore = assign({}, EventEmitter.prototype, {
-    // --- Eventing {{{
+
+    // --- Eventing (Changed) {{{
     emitChange: function () {
         this.emit(ConfigStoreEvents.Changed);
     },
@@ -42,6 +39,7 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
     },
     // --- }}}
 
+    // --- Accessors (getPublicCredential, getPrivateCredential) {{{
     getPublicCredential: function () {
         var stored = Cookies.get(PublicCredentialKey);
 
@@ -62,6 +60,9 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
         return stored;
     },
 
+    // --- }}}
+
+    // -- Private Methods (_setPublicCredential, _setPrivateCredential, _setCredentials) {{{
     _setPublicCredential: function (cred) {
         Cookies.set(PublicCredentialKey, cred);
     },
@@ -70,12 +71,12 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
         Cookies.set(PrivateCredentialKey, cred);
     },
 
-    setCredentials: function (pubCred, priCred) {
-        Logger.info("ConfigStore: setting credentials");
+    _setCredentials: function (pubCred, priCred) {
         this._setPublicCredential(pubCred);
         this._setPrivateCredential(priCred);
         this.emitChange();
     }
+    // --- }}}
 
 });
 
@@ -84,13 +85,17 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
  */
 ConfigStore.dispatchToken = AppDispatcher.register(function (action) {
     switch (action.actionType) {
+        case AppConstants.APP_INITIALIZED:
+            ConfigStore.emitChange();
+            break;
         case AppConstants.CONFIG_UPDATE:
-            ConfigStore.setCredentials(action.data.publicCredential,
-                    action.data.privateCredential);
+            ConfigStore._setCredentials(
+                    action.data.publicCredential,
+                    action.data.privateCredential
+            );
             break;
     }
 });
 
-ConfigStore.emitChange();
 
 module.exports = ConfigStore;

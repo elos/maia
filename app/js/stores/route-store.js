@@ -59,7 +59,7 @@ var RouteStore = assign({}, EventEmitter.prototype, {
     },
 
     changeRouteTo: function(r) {
-        window.history.pushState("", r, "/#!/" + r);
+        window.history.pushState("", r, window.location.pathname + "/#!/" + r);
         this._route = r;
         this.emitChange();
     }

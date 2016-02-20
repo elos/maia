@@ -1,27 +1,27 @@
 @font-face {
     font-family: 'Avenir Next Regular';
-    src: url('/assets/fonts/AvenirNext-Regular.woff');
+    src: url('../assets/fonts/AvenirNext-Regular.woff');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: Avenir Next UltraLight;
-    src: url('/assets/fonts/AvenirNext-UltraLight.woff');
+    src: url('../assets/fonts/AvenirNext-UltraLight.woff');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Avenir Next Medium';
-    src: url('/assets/fonts/AvenirNext-Medium.woff');
+    src: url('../assets/fonts/AvenirNext-Medium.woff');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Avenir Next DemiBold';
-    src: url('/assets/fonts/AvenirNext-DemiBold.woff');
+    src: url('../assets/fonts/AvenirNext-DemiBold.woff');
     font-weight: normal;
     font-style: normal;
 }

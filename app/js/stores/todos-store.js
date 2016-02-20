@@ -13,7 +13,10 @@ var Routes = require("../constants/route-constants");
 var RecordStore = require("../stores/record-store");
 var RecordActionCreators = require("../action-creators/record-action-creators");
 var SnackbarActionCreators = require("../action-creators/snackbar-action-creators");
+var RouteActionCreators = require("../action-creators/route-action-creator");
 var Logger = require("../utils/logger");
+
+var DB = require("../core/db");
 
 /*
  * Private variables and functions can go here
@@ -45,7 +48,6 @@ var TodosStore = assign({}, EventEmitter.prototype, {
 
     _initialize: function () {
         RecordStore.addChangeListener(this._recordChange);
-        this._refresh();
     },
 
     _recordChange: function () {
@@ -53,8 +55,20 @@ var TodosStore = assign({}, EventEmitter.prototype, {
         TodosStore.emitChange();
     },
 
-    _refresh: function () {
-        RecordActionCreators.query("task", {});
+    _refresh: function (handlers) {
+        handlers = handlers || {};
+        handlers.failure = handlers.failure || function (error) {
+            if (error === DB.Error.Unauthorized) {
+                SnackbarActionCreators.showMessage("Unauthorized", {
+                    actionText: "LOGIN",
+                    actionHandler: function () {
+                        RouteActionCreators.ShowAccountDetails();
+                    },
+                });
+            }
+        };
+
+        RecordActionCreators.query("task", {}, handlers);
     },
 
     _todos: [],

@@ -2,6 +2,10 @@ var TodosActions = require ("../actions/todos-actions");
 
 var TodosActionCreators = {
 
+    refresh: function () {
+        TodosActions.refreshTasks();
+    },
+
     complete: function (id) {
         TodosActions.completeTask(id);
     },

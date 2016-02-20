@@ -27,7 +27,20 @@ var MDL = {
     },
 
     showSnack: function (divSelector, data) {
-        document.querySelector(divSelector).MaterialSnackbar.showSnackbar(data);
+        var div = document.querySelector(divSelector);
+
+        if (div) {
+            div.MaterialSnackbar.showSnackbar(data);
+            return;
+        }
+
+        if (!data.alreadyRetried) {
+            data.alreadyRetried = true;
+            // otherwise, queue up for later
+            setTimeout(this.showSnack.bind(divSelector, data), 100);
+        } else {
+            Logger.info("MDL.showSnack failed to ever show: ", data);
+        }
     },
 };
 

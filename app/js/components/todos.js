@@ -28,8 +28,9 @@ var Todos = React.createClass({
     /*
      * Called once when the component is mounted
      */
-   componentDidMount: function () {
+    componentDidMount: function () {
         TodosStore.addChangeListener(this._onNewChange);
+        TodosActionCreators.refresh();
         MDL.refresh();
     },
 

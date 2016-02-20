@@ -40,22 +40,19 @@ body {
 
 .tab, .tab-selected {
     color: grey;
-    border: 1px solid grey;
-    border-radius: 3px;
     font-family: Avenir Next Regular;
-    font-size: .5em;
+    font-size: .7em;
     cursor: pointer;
-    margin: 2px 5px;
-    padding: 3px 10px;
+    padding: 0px 12px;
+    border-bottom: 2px solid rgba(0,0,0,.1);
 }
 
 .tab:hover, .tab-selected:hover {
-    border: 1px solid #326dff;
 }
 
 .tab-selected {
     color: #326dff;
-    border: 1px solid #326dff;
+    border-bottom: 2px solid #326dff;
     font-family: Avenir Next Medium;
 }
 

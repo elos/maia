@@ -2,6 +2,12 @@ var AppDispatcher = require("../dispatcher/app-dispatcher");
 var AppConstants = require("../constants/app-constants");
 
 var TodosActions = {
+    refreshTasks: function () {
+        AppDispatcher.dispatch({
+            actionType: AppConstants.TODOS_REFRESH,
+        });
+    },
+
     completeTask: function (id) {
         AppDispatcher.dispatch({
             actionType: AppConstants.TODOS_COMPLETE,

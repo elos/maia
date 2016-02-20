@@ -95,9 +95,9 @@ var Header = React.createClass({
 
     _isSelected: function(tabName) {
         if (this._TabNames[tabName] == this.state.currentRoute) {
-            return "tab-selected";
+            return "tab-selected mdl-button mdl-button-js mdl-js-ripple-effect";
         } else {
-            return "tab";
+            return "tab mdl-button mdl-button-js mdl-js-ripple-effect";
         }
     }
 

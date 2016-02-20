@@ -9,9 +9,12 @@ var React = require("react");
  * Require any local code we need, like stores, utils etc.
  */
 var Logger = require("../utils/logger");
+var MDL = require("../utils/mdl");
+
 var ConfigStore = require("../stores/config-store");
 var ConfigActionCreators = require("../action-creators/config-action-creator");
 var RouteActionCreator = require("../action-creators/route-action-creator");
+var SnackbarActionCreators = require("../action-creators/snackbar-action-creators");
 
 /*
  * "Private" variables and functions can go here
@@ -23,8 +26,7 @@ var AccountDetails = React.createClass({
      * Called once when the component is mounted
      */
     componentDidMount: function () {
-        componentHandler.upgradeDom(); // mdl
-        Logger.info("account details mount");
+        MDL.refresh();
     },
 
     /*
@@ -36,8 +38,7 @@ var AccountDetails = React.createClass({
      * Called when the compoenent's changes are flushed to the DOM
      */
     componentDidUpdate: function() {
-        // This upgrades all upgradable components (i.e. with 'mdl-js-*' class)
-        componentHandler.upgradeDom(); // mdl
+        MDL.refresh();
     },
 
     /*
@@ -68,6 +69,7 @@ var AccountDetails = React.createClass({
     saveCredentials: function () {
         ConfigActionCreators.update(this.state.publicCredential,
                 this.state.privateCredential);
+        SnackbarActionCreators.showMessage("Credentials Saved");
     },
 
     /*

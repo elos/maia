@@ -54,16 +54,24 @@ var RecordActionCreators = {
         });
     },
 
-    query: function (kind, attrs) {
+    query: function (kind, attrs, handlers) {
+        // optional args
+        handlers = handlers || {};
+        handlers.success = handlers.success || function() {};
+        handlers.failure = handlers.failure || function() {};
+
         DB.query(kind, attrs, {
             resolve: function (records) {
                 records.forEach(function (record) {
                     RecordActions.update(kind, record);
                 });
+
+                handlers.success(records);
             },
             error: function (error) {
                 // TODO(nclandolfi) APIErrorStore
                 Logger.info("ERROR IN RECORD_ACTIONS Query: " + error);
+                handlers.failure(error);
             },
         });
     },

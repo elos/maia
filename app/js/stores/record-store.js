@@ -21,6 +21,9 @@ var _ticksRemaining = 10;
 var RecordStoreEvents = {
     Update: "update",
     Delete: "delete",
+    Change: "change",
+    Push: "push",
+    Pull: "pull"
 };
 
 
@@ -52,11 +55,13 @@ var RecordStore = assign({}, EventEmitter.prototype, {
     addChangeListener: function (callback) {
         this.on(RecordStoreEvents.Update, callback);
         this.on(RecordStoreEvents.Delete, callback);
+        this.on(RecordStoreEvents.Change, callback);
     },
 
     removeChangeListener: function (callback) {
         this.removeListener(RecordStoreEvents.Update, callback);
         this.removeListener(RecordStoreEvents.Delete, callback);
+        this.removeListener(RecordStoreEvents.Change, callback);
     },
 
     getAll: function(kind) {
@@ -238,6 +243,18 @@ var RecordStore = assign({}, EventEmitter.prototype, {
 
                     RecordStore.emitChange(RecordStoreEvents.Update);
                 });
+    },
+
+    _pushRecord: function (kind, record) {
+        RecordStore.records[kind][record.id] = RecordStore._merge(RecordStore.records[kind][record.id] || {}, record);
+        this.emit(RecordStoreEvents.Push);
+        this.emit(RecordStoreEvents.Change);
+    },
+
+    _pullRecord: function (kind, id) {
+        delete RecordStore.records[kind][id];
+        this.emit(RecordStoreEvents.Pull);
+        this.emit(RecordStoreEvents.Change);
     }
 });
 
@@ -250,22 +267,11 @@ RecordStore.dispatchToken = AppDispatcher.register(function (action) {
             AppDispatcher.waitFor([ConfigStore.dispatchToken]);
             RecordStore.initialize();
             break;
-        case AppConstants.RECORD_GET:
-            RecordStore._find(action.data.kind, action.data.id);
-            break;
         case AppConstants.RECORD_UPDATE:
-            RecordStore._save(action.data.kind, action.data.record);
+            RecordStore._pushRecord(action.data.kind, action.data.record);
             break;
         case AppConstants.RECORD_DELETE:
-            RecordStore._remove(action.data.kind, action.data.record);
-            break;
-        case AppConstants.RECORD_QUERY:
-            RecordStore._query(action.data.kind, action.data.attrs);
-            break;
-        default:
-            /*
-             * Do nothing
-             */
+            RecordStore._pullRecord(action.data.kind, action.data.id);
             break;
     }
 });

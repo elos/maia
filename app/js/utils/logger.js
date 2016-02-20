@@ -20,8 +20,16 @@ if (!window.console.log) {
 }
 
 var Logger = {
+    DEBUG: false,
+
     info: function () {
         console.log.apply(console, arguments);
+    },
+
+    debug: function () {
+        if (this.DEBUG) {
+            console.log.apply(console, arguments);
+        }
     },
 };
 

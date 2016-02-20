@@ -59,7 +59,7 @@ var TodosStore = assign({}, EventEmitter.prototype, {
     _completeTask: function(id) {
         var existing = RecordStore.records.task[id];
         existing.completed_at = new Date();
-        RecordStore._save("task", existing);
+        RecordActionCreators.save("task", existing);
     }
 });
 

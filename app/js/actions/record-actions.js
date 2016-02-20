@@ -4,22 +4,22 @@ var AppConstants = require("../constants/app-constants");
 var Logger = require("../utils/Logger");
 
 var RecordActions = {
-    update: function (kind, r) {
+    update: function (kind, record) {
         AppDispatcher.dispatch({
             actionType: AppConstants.RECORD_UPDATE,
             data: {
                 kind: kind,
-                record: r
+                record: record,
             }
         });
     },
 
-    delete: function (kind, id) {
+    delete: function (kind, record) {
         AppDispatcher.dispatch({
             actionType: AppConstants.RECORD_DELETE,
             data: {
                 kind: kind,
-                id: id
+                record: record,
             }
         });
     },

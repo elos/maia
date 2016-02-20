@@ -36,6 +36,13 @@ var RecordStore = assign({}, EventEmitter.prototype, {
     username: undefined,
     password: undefined,
     records: {},
+    _table: function (kind) {
+        if (this.records[kind] === undefined) {
+            this.records[kind] = {};
+        }
+
+        return this.records[kind];
+    },
 
     initialize: function() {
         ConfigStore.addChangeListener(this._configChanged);
@@ -80,6 +87,16 @@ var RecordStore = assign({}, EventEmitter.prototype, {
         }
 
         return records;
+    },
+
+    get: function (kind, id) {
+        var bucket =  this.records[kind];
+        if (!bucket) {
+            return null;
+        }
+
+        // cause this will be undefined I think, which isn't null
+        return bucket[id] || null;
     },
 
     _encode: function (url, params) {
@@ -246,13 +263,13 @@ var RecordStore = assign({}, EventEmitter.prototype, {
     },
 
     _pushRecord: function (kind, record) {
-        RecordStore.records[kind][record.id] = RecordStore._merge(RecordStore.records[kind][record.id] || {}, record);
+        RecordStore._table(kind)[record.id] = RecordStore._merge(RecordStore._table(kind)[record.id] || {}, record);
         this.emit(RecordStoreEvents.Push);
         this.emit(RecordStoreEvents.Change);
     },
 
     _pullRecord: function (kind, id) {
-        delete RecordStore.records[kind][id];
+        delete RecordStore._table(kind)[id];
         this.emit(RecordStoreEvents.Pull);
         this.emit(RecordStoreEvents.Change);
     }
@@ -271,7 +288,7 @@ RecordStore.dispatchToken = AppDispatcher.register(function (action) {
             RecordStore._pushRecord(action.data.kind, action.data.record);
             break;
         case AppConstants.RECORD_DELETE:
-            RecordStore._pullRecord(action.data.kind, action.data.id);
+            RecordStore._pullRecord(action.data.kind, action.data.record.id);
             break;
     }
 });

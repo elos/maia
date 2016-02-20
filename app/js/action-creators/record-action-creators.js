@@ -28,11 +28,19 @@ var RecordActionCreators = {
         });
     },
 
-
     query: function (kind, attrs) {
-        RecordActions.generateQuery(kind, attrs);
+        DB.query(kind, attrs, {
+            resolve: function (records) {
+                records.forEach(function (record) {
+                    RecordActions.update(kind, record);
+                });
+            },
+            error: function (error) {
+                // TODO(nclandolfi) APIErrorStore
+                Logger.info("ERROR IN RECORD_ACTIONS Query: " + error);
+            },
+        });
     },
-
 };
 
 module.exports = RecordActionCreators;

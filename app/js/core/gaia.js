@@ -32,6 +32,10 @@ var Gaia = {
 
         // RecordQuery is the primary endpoint for querying the elos ontology.
         RecordQuery: "/record/query/",
+
+        // RecordChanges is the primary endpoint for streaming record changes
+        // Note: it is a websocket endpoint.
+        RecordChanges: "/record/changes/",
     },
 
     // endpoint takes a gaia Route, such as one from Gaia.Routes.*,

@@ -175,6 +175,40 @@ var DB = {
 
     // --- }}}
 
+    // --- Record Changes (ChangeKind, changes()) {{{
+
+    ChangeKind: {
+        Update: 1,
+        Delete: 2,
+    },
+
+    // changes opens a websocket to Gaia asking for record changes,
+    // the handler is the standard { error: func.., resolve: func...}
+    // changes returns a niladic function that closes the websocket;
+    changes: function (handler) {
+        var ws = Gaia.ws(Gaia.endpoint(Gaia.Routes.RecordChanges));
+
+        ws.onerror = function (error) {
+            Logger.info("ws on error: ", error);
+            handler.error(error);
+        };
+
+        ws.onclose = function (error) {
+            Logger.info("ws on close: ", error);
+            handler.error(error);
+        };
+
+        ws.onmessage = function (messageEvent) {
+            handler.resolve(JSON.parse(messageEvent.data));
+        };
+
+        return function () {
+            ws.close();
+        };
+    },
+
+    // --- }}}
+
 };
 
 module.exports = DB;

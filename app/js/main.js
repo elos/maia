@@ -17,9 +17,25 @@ require("./stores/log-store");
 require("./stores/tick-store");
 
 var Root = require("./components/root");
+var DB = require("./core/db");
+var RecordActions = require("./actions/record-actions");
 
 Dispatcher.dispatch({
     actionType: Constants.APP_INITIALIZED
+});
+
+DB.changes({
+    error: function () {console.log("yikes");},
+    resolve: function (recordChange) {
+        switch (recordChange.change_kind) {
+            case DB.ChangeKind.Update:
+                RecordActions.update(recordChange.record_kind, recordChange.record);
+                break;
+            case DB.ChangeKind.Delete:
+                RecordActions.delete(recordChange.record_kind, recordChange.record);
+                break;
+        }
+    },
 });
 
 /*

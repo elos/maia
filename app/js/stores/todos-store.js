@@ -48,22 +48,22 @@ var TodosStore = assign({}, EventEmitter.prototype, {
     },
 
     _recordChange: function () {
-        TodosStore.todos = RecordStore.getAll("task");
+        TodosStore._todos = RecordStore.getAll("task");
         TodosStore.emitChange();
     },
 
     _refresh: function () {
-        RecordStore._query("task", {});
+        RecordActionCreators.query("task", {});
     },
 
     _todos: [],
 
     getTodos: function() {
-        return this.todos;
+        return this._todos;
     },
 
     _completeTask: function(id) {
-        var existing = RecordStore.records.task[id];
+        var existing = RecordStore.get('task', id);
         existing.completed_at = new Date();
         RecordActionCreators.save("task", existing);
     }

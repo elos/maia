@@ -1,8 +1,6 @@
 var AppDispatcher = require("../dispatcher/app-dispatcher");
 var AppConstants = require("../constants/app-constants");
 
-var Logger = require("../utils/Logger");
-
 var RecordActions = {
     update: function (kind, record) {
         AppDispatcher.dispatch({

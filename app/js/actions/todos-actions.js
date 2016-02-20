@@ -9,6 +9,33 @@ var TodosActions = {
                 task_id: id,
             }
         });
+    },
+
+    startTask: function (id) {
+        AppDispatcher.dispatch({
+            actionType: AppConstants.TODOS_START,
+            data: {
+                task_id: id,
+            }
+        });
+    },
+
+    stopTask: function (id) {
+        AppDispatcher.dispatch({
+            actionType: AppConstants.TODOS_STOP,
+            data: {
+                task_id: id,
+            }
+        });
+    },
+
+    deleteTask: function (id) {
+        AppDispatcher.dispatch({
+            actionType: AppConstants.TODOS_DELETE,
+            data: {
+                task_id: id,
+            }
+        });
     }
 };
 

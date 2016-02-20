@@ -24,7 +24,11 @@ var MDL = {
     // gets upgraded
     refresh: function () {
         window.componentHandler.upgradeDom();
-    }
+    },
+
+    showSnack: function (divSelector, data) {
+        document.querySelector(divSelector).MaterialSnackbar.showSnackbar(data);
+    },
 };
 
 module.exports = MDL;

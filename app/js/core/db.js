@@ -138,8 +138,9 @@ var DB = {
                 kind: kind,
             },
             function (status, responseBody) {
-                if (status === 200) {
-                    handler.resolve(JSON.parse(responseBody));
+                // we expect no content
+                if (status === 204) {
+                    handler.resolve();
                     return;
                 }
 

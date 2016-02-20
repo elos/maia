@@ -10,14 +10,17 @@ var React = require("react");
  * Require any local code we need, like stores, utils etc.
  */
 var RouteStore = require("../stores/route-store");
+var SnackbarStore = require("../stores/snackbar-store");
 var RouteConstants = require("../constants/route-constants");
+var SnackbarActionCreators = require("../action-creators/snackbar-action-creators");
 
 var Logger = require("../utils/logger");
+var MDL = require("../utils/mdl");
 
 var Header = require("../components/header");
 var CLI = require("../components/cli");
-var AccountDetails = require("../components/account_details");
 var Todos = require("../components/todos");
+var AccountDetails = require("../components/account_details");
 
 /*
  * "Private" variables and functions can go here
@@ -32,6 +35,7 @@ var Root = React.createClass({
          * Tell the RouteStore we want to know about changes,
          */
         RouteStore.addChangeListener(this._onRouteChange);
+        SnackbarStore.addChangeListener(this._onSnackbarChange);
     },
 
     /*
@@ -39,6 +43,7 @@ var Root = React.createClass({
      */
     componentWillUnmount: function () {
         RouteStore.removeChangeListener(this._onRouteChange);
+        SnackbarStore.removeChangeListener(this._onSnackbarChange);
     },
 
     /*
@@ -46,7 +51,8 @@ var Root = React.createClass({
      */
     getInitialState: function () {
         return {
-            currentRoute: RouteStore.getCurrentRoute()
+            currentRoute: RouteStore.getCurrentRoute(),
+            snack: null,
         };
     },
 
@@ -71,10 +77,25 @@ var Root = React.createClass({
                 break;
         }
 
+
+        var state = this.state;
+        if (this.state.snack !== null) {
+            // dismiss cause we are gonna show it
+            setTimeout(function () {
+                SnackbarActionCreators.dismissSnack(state.snack);
+            }, this.state.snack.timeout);
+
+            MDL.showSnack("#root-snackbar", this.state.snack);
+        }
+
         return (
                 <div class="root">
-                <Header />
-                <Component />
+                    <Header />
+                    <Component />
+                    <div id="root-snackbar" className="mdl-js-snackbar mdl-snackbar">
+                        <div className="mdl-snackbar__text"></div>
+                        <button className="mdl-snackbar__action" type="button"></button>
+                    </div>
                 </div>
                )
     },
@@ -86,7 +107,19 @@ var Root = React.createClass({
         this.setState({
             currentRoute: RouteStore.getCurrentRoute()
         });
-    }
+    },
+
+    _onSnackbarChange: function () {
+        if (SnackbarStore.hasSnacks()) {
+            this.setState({
+                snack: SnackbarStore.getOne(),
+            });
+        } else {
+            this.setState({
+                snack: null,
+            });
+        }
+    },
 
 });
 

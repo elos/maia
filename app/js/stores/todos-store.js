@@ -12,6 +12,7 @@ var AppConstants = require("../constants/app-constants");
 var Routes = require("../constants/route-constants");
 var RecordStore = require("../stores/record-store");
 var RecordActionCreators = require("../action-creators/record-action-creators");
+var SnackbarActionCreators = require("../action-creators/snackbar-action-creators");
 var Logger = require("../utils/logger");
 
 /*
@@ -63,10 +64,132 @@ var TodosStore = assign({}, EventEmitter.prototype, {
     },
 
     _completeTask: function(id) {
-        var existing = RecordStore.get('task', id);
+        var prior = RecordStore.get("task", id);
+
+        if (!prior) {
+            SnackbarActionCreators.showMessage("Couldn't find task");
+            return;
+        }
+
+        var existing = JSON.parse(JSON.stringify(prior)),
+            addedStage;
+
         existing.completed_at = new Date();
-        RecordActionCreators.save("task", existing);
-    }
+
+        if (existing.stages.length % 2 === 1) {
+            existing.stages.push(new Date());
+            addedStage = true;
+        }
+
+        RecordActionCreators.save("task", existing, {
+            success: function () {
+                SnackbarActionCreators.showMessage("Task completed", {
+                    actionText: "UNDO",
+                    actionHandler: function () {
+                        RecordActionCreators.save("task", prior);
+                    },
+                });
+            },
+            failure: function (error) {
+                SnackbarActionCreators.showMessage("Task couldn't be completed.. " + error, {
+                        actionText: "RETRY",
+                        actionHandler: TodosStore._completeTask.bind(TodosStore, id),
+                });
+            },
+        });
+    },
+
+    _startTask: function (id) {
+        var prior = RecordStore.get('task', id),
+            existing = JSON.parse(JSON.stringify(prior));
+
+        if (!prior) {
+            SnackbarActionCreators.showMessage("Couldn't find task");
+            return;
+        }
+
+        if (existing.stages.length % 2 !== 0) {
+            SnackbarActionCreators.showMessage("Task already in progress");
+            return;
+        }
+
+        existing.stages.push(new Date());
+        RecordActionCreators.save("task", existing, {
+            success: function () {
+                SnackbarActionCreators.showMessage("Task started", {
+                    actionText: "UNDO",
+                    actionHandler: function () {
+                        RecordActionCreators.save("task", prior);
+                    },
+                });
+            },
+            failure: function (error) {
+                SnackbarActionCreators.showMessage("Task couldn't be started.. " + error, {
+                        actionText: "RETRY",
+                        actionHandler: TodosStore._completeTask.bind(TodosStore, id),
+                });
+            },
+        });
+    },
+
+    _stopTask: function (id) {
+        var prior = RecordStore.get('task', id),
+            existing = JSON.parse(JSON.stringify(prior));
+
+        if (!prior) {
+            SnackbarActionCreators.showMessage("Couldn't find task");
+            return;
+        }
+
+        if (existing.stages.length % 2 === 0) {
+            SnackbarActionCreators.showMessage("Task not in progress");
+            return;
+        }
+
+        existing.stages.push(new Date());
+        RecordActionCreators.save("task", existing, {
+            success: function () {
+                SnackbarActionCreators.showMessage("Task stopped", {
+                    actionText: "UNDO",
+                    actionHandler: function () {
+                        RecordActionCreators.save("task", prior);
+                    },
+                });
+            },
+            failure: function (error) {
+                SnackbarActionCreators.showMessage("Task couldn't be stopped.. " + error, {
+                        actionText: "RETRY",
+                        actionHandler: TodosStore._completeTask.bind(TodosStore, id),
+                });
+            },
+        });
+    },
+
+    _deleteTask: function(id) {
+        var prior = RecordStore.get("task", id);
+
+        if (!prior) {
+            SnackbarActionCreators.showMessage("Couldn't find task");
+            return;
+        }
+
+        RecordActionCreators.delete("task", prior, {
+            success: function () {
+                SnackbarActionCreators.showMessage("Task deleted", {
+                    actionText: "UNDO",
+                    actionHandler: function () {
+                        RecordActionCreators.save("task", prior);
+                    },
+                });
+            },
+            failure: function (error) {
+                SnackbarActionCreators.showMessage("Task couldn't be deleted.. " + error, {
+                    actionText: "RETRY",
+                    actionHandler: TodosStore._deleteTask.bind(TodosStore, id),
+                });
+            },
+        });
+    },
 });
 
 /*
@@ -88,6 +211,15 @@ AppDispatcher.register(function (action) {
         break;
       case AppConstants.TODOS_COMPLETE:
         TodosStore._completeTask(action.data.task_id);
+        break;
+      case AppConstants.TODOS_START:
+        TodosStore._startTask(action.data.task_id);
+        break;
+      case AppConstants.TODOS_STOP:
+        TodosStore._stopTask(action.data.task_id);
+        break;
+      case AppConstants.TODOS_DELETE:
+        TodosStore._deleteTask(action.data.task_id);
         break;
       default:
           /*

@@ -16,14 +16,40 @@ var RecordActionCreators = {
         });
     },
 
-    save: function(kind, record) {
+    save: function(kind, record, handlers) {
+        // optional args
+        handlers = handlers || {};
+        handlers.success = handlers.success || function() {};
+        handlers.failure = handlers.failure || function() {};
+
         DB.save(kind, record, {
             resolve: function (record) {
                 RecordActions.update(kind, record);
+                handlers.success(record);
             },
             error: function (error) {
                 // TODO(nclandolfi) APIErrorStore
                 Logger.info("ERROR IN RECORD_ACTIONS>SAVE: " + error);
+                handlers.failure(error);
+            },
+        });
+    },
+
+    delete: function (kind, record, handlers) {
+        // optional args
+        handlers = handlers || {};
+        handlers.success = handlers.success || function() {};
+        handlers.failure = handlers.failure || function() {};
+
+        DB.delete(kind, record.id, {
+            resolve: function () {
+                RecordActions.delete(kind, record);
+                handlers.success(record);
+            },
+            error: function (error) {
+                // TODO(nclandolfi) APIErrorStore
+                Logger.info("ERROR IN RECORD_ACTIONS delete: " + error);
+                handlers.failure(error);
             },
         });
     },

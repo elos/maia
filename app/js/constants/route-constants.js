@@ -3,4 +3,5 @@ module.exports = {
     AccountDetails: "account_details",
     CLI: "cli",
     Todos: "todos",
+    TodosNew: "todos/new",
 };

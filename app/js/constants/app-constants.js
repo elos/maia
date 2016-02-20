@@ -32,6 +32,15 @@ module.exports = {
      */
     TODOS_COMPLETE: "TODOS_COMPLETE",
     TODOS_REFRESH: "TODOS_REFRESH",
+    TODOS_STOP: "TODOS_STOP",
+    TODOS_START: "TODOS_START",
+    TODOS_DELETE: "TODOS_DELETE",
+
+    /*
+     * Snackbar Constants
+     */
+    SNACKBAR_ADD: "SNACKBAR_ADD",
+    SNACKBAR_DROP: "SNACKBAR_DROP",
 
     /*
      * CLI Constants

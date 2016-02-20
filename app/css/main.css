@@ -151,3 +151,17 @@ input[type=submit] {
 .cli-input-text-field {
     width: 100%;
 }
+
+.todo-in-progress {
+    animation:pulse 3s infinite alternate;
+    animation-timing-function: ease-in-out;
+}
+
+@keyframes pulse {
+    from {
+        background: rgba(0,255,163,0.05);
+    }
+    to {
+        background: rgba(0,255,163,0.30);
+    }
+}

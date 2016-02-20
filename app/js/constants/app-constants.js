@@ -31,6 +31,7 @@ module.exports = {
      * Todos Constants
      */
     TODOS_COMPLETE: "TODOS_COMPLETE",
+    TODOS_REFRESH: "TODOS_REFRESH",
 
     /*
      * CLI Constants

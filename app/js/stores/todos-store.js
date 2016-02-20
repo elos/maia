@@ -9,6 +9,7 @@ var assign = require("object-assign");
  */
 var AppDispatcher = require("../dispatcher/app-dispatcher");
 var AppConstants = require("../constants/app-constants");
+var Routes = require("../constants/route-constants");
 var RecordStore = require("../stores/record-store");
 var RecordActionCreators = require("../action-creators/record-action-creators");
 var Logger = require("../utils/logger");
@@ -24,25 +25,8 @@ var TodosStoreEvents = {
  * TodosStore
  */
 var TodosStore = assign({}, EventEmitter.prototype, {
-    todos: [],
 
-    getTodos: function() {
-        return this.todos;
-    },
-
-    initialize: function () {
-        RecordStore.addChangeListener(this._recordChange);
-        this.refresh();
-    },
-
-    refresh: function () {
-        RecordStore._query("task", {});
-    },
-
-    _recordChange: function () {
-        TodosStore.todos = RecordStore.getAll("task");
-        TodosStore.emitChange();
-    },
+    // --- Eventing {{{
 
     emitChange: function () {
         this.emit(TodosStoreEvents.Changed);
@@ -54,6 +38,28 @@ var TodosStore = assign({}, EventEmitter.prototype, {
 
     removeChangeListener: function (callback) {
         this.removeListener(TodosStoreEvents.Changed, callback);
+    },
+
+    // --- }}}
+
+    _initialize: function () {
+        RecordStore.addChangeListener(this._recordChange);
+        this._refresh();
+    },
+
+    _recordChange: function () {
+        TodosStore.todos = RecordStore.getAll("task");
+        TodosStore.emitChange();
+    },
+
+    _refresh: function () {
+        RecordStore._query("task", {});
+    },
+
+    _todos: [],
+
+    getTodos: function() {
+        return this.todos;
     },
 
     _completeTask: function(id) {
@@ -69,8 +75,16 @@ var TodosStore = assign({}, EventEmitter.prototype, {
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
       case AppConstants.APP_INITIALIZED:
-          AppDispatcher.waitFor([RecordStore.dispatchToken]);
-        TodosStore.initialize();
+        AppDispatcher.waitFor([RecordStore.dispatchToken]);
+        TodosStore._initialize();
+        break;
+      case AppConstants.ROUTE_CHANGE:
+        if (action.data.route === Routes.Todos) {
+            TodosStore._refresh();
+        }
+        break;
+      case AppConstants.TODOS_REFRESH:
+        TodosStore._refresh();
         break;
       case AppConstants.TODOS_COMPLETE:
         TodosStore._completeTask(action.data.task_id);

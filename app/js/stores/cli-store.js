@@ -14,6 +14,8 @@ var Logger = require("../utils/logger");
 
 var ConfigStore = require("../stores/config-store");
 
+var Gaia = require ("../core/gaia");
+
 /*
  * "Private" variables and functions can go here
  */
@@ -57,13 +59,12 @@ var CLIStore = assign({}, EventEmitter.prototype, {
         CLIStore.pushHistory("Welcome to elos");
     },
 
-    _attemptConnection: function (publicCred, privateCred) {
-        var url = "ws://elos.pw/command/web/?public=" + publicCred + "&private=" + privateCred;
+    _attemptConnection: function () {
         if (this.ws !== null) {
-            this.ws.close();
+            return;
         }
 
-        this.ws = new WebSocket(url);
+        this.ws = Gaia.ws(Gaia.endpoint("/command/web/"));
         this.ws.onmessage = this._onMessage;
         this.ws.onopen = this._onOpen;
         this.ws.onclose = this._onClose;

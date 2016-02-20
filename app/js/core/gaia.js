@@ -15,7 +15,7 @@ var ConfigStore = require("../stores/config-store");
  */
 var Gaia = {
 
-    // --- URL Management (Host, Routes, endpoint()) {{{
+    // --- URL Management (Host, Routes, endpoint(), wsEndpoint) {{{
 
     // Host is the URL representing the base of a gaia endpoint.
     // To construct particular URL's for a host, use the Gaia.endpoint
@@ -39,6 +39,12 @@ var Gaia = {
     // a fully qualified url.
     endpoint: function (route) {
         return Gaia.Host + route;
+    },
+
+    // wsEndpoint uses endpoint to construct the route, but then replaces
+    // the 'http' protocol with 'ws'
+    wsEndpoint: function (route) {
+        return this.endpoint(route).replace("http", "ws");
     },
 
     // --- }}}
@@ -126,6 +132,22 @@ var Gaia = {
         Gaia._onResponse(xhr, callback);
 
         xhr.send();
+    },
+
+    // --- }}}
+
+    // --- Websockets (ws) {{{
+
+    ws: function (endpoint) {
+        return new WebSocket(
+            this._encode(
+                endpoint.replace("http", "ws"),
+                {
+                    "public": ConfigStore.getPublicCredential(),
+                    "private": ConfigStore.getPrivateCredential(),
+                }
+            )
+        );
     },
 
     // --- }}}

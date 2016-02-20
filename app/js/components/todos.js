@@ -14,6 +14,7 @@ var CLIActionCreator = require("../action-creators/cli-action-creator");
 var RouteActionCreator = require("../action-creators/route-action-creator");
 var TodosActionCreators = require("../action-creators/todos-action-creators");
 var TodosStore = require("../stores/todos-store");
+var MDL = require("../utils/mdl");
 
 /*
  * "Private" variables and functions can go here
@@ -24,9 +25,9 @@ var Todos = React.createClass({
     /*
      * Called once when the component is mounted
      */
-    componentDidMount: function () {
+   componentDidMount: function () {
         TodosStore.addChangeListener(this._onNewChange);
-        componentHandler.upgradeDom(); // mdl
+        MDL.refresh();
     },
 
     /*
@@ -41,7 +42,7 @@ var Todos = React.createClass({
      */
     componentDidUpdate: function() {
         // This upgrades all upgradable components (i.e. with 'mdl-js-*' class)
-        componentHandler.upgradeDom(); // mdl
+        MDL.refresh();
     },
 
     /*

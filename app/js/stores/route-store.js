@@ -11,22 +11,24 @@ var AppDispatcher = require("../dispatcher/app-dispatcher");
 var AppConstants = require("../constants/app-constants");
 var RouteConstants = require("../constants/route-constants");
 
-var Logger = require("../utils/logger");
-
 /*
  * "Private" variables and functions can go here
  */
-
 var RouteStoreEvents = {
     Changed: "changed"
 };
 
 /*
- * RouteStore
- *  - Stores current routing info
+ * RouteStore: stores and manages the current route, stores and retrieves it
+ * from the URL as well
  */
 var RouteStore = assign({}, EventEmitter.prototype, {
+    // Landing is the route to which uses visiting '/' are redirected
+    // to. This is a sort of configuration.
+    Landing: RouteConstants.CLI,
+
     // --- Eventing {{{
+
     emitChange: function () {
         this.emit(RouteStoreEvents.Changed);
     },
@@ -38,43 +40,65 @@ var RouteStore = assign({}, EventEmitter.prototype, {
     removeChangeListener: function (callback) {
         this.removeListener(RouteStoreEvents.Changed, callback);
     },
+
     // --- }}}
 
-    initialize: function () {
-        Logger.info("init");
-        var hash = window.location.hash;
-        if (hash.length === 0) {
-            this.changeRouteTo(RouteConstants.CLI);
-            return;
-        }
+    // --- Public Accessors (getCurrentRoute) {{{
 
-        hash = hash.substring(3, hash.length);
-        this.changeRouteTo(hash);
-    },
-
-    _route: RouteConstants.CLI,
-
+    // Current route as managed by the RouteStore
     getCurrentRoute: function() {
         return this._route;
     },
 
-    changeRouteTo: function(r) {
-        window.history.pushState("", r, window.location.origin + window.location.pathname + "/#!/" + r);
+    // --- }}}
+
+    // --- Private (_route, _initialize(), _changeRouteTo) {{{
+
+    // internal recollection of state
+    _route: RouteConstants.CLI,
+
+    // initialization
+    _initialize: function () {
+        // Get the current route, the hash : '#!/foo/bar'
+        // is used for web apps to put state in the URL
+        var hash = window.location.hash;
+
+        // if it's empty or base, redirect to our landing
+        if (hash.length === 0 || hash.length === "#!/") {
+            this._changeRouteTo(this.Landing);
+            return;
+        }
+
+        // otherwise we want to transition to the screen
+        // represented by the route given there.
+        this._changeRouteTo(hash.substring(3, hash.length));
+    },
+
+    _changeRouteTo: function(r) {
+        window.history.pushState(
+            "",  // state??
+            r,   // title??
+            // the actual url:
+            window.location.origin + window.location.pathname + "#!/" + r
+        );
+
         this._route = r;
         this.emitChange();
     }
+
+    // --- }}}
 });
 
 /*
  * Register all event callbacks
  */
-AppDispatcher.register(function (action) {
+RouteStore.dispatchToken = AppDispatcher.register(function (action) {
     switch (action.actionType) {
         case AppConstants.APP_INITIALIZED:
-            RouteStore.initialize();
+            RouteStore._initialize();
             break;
         case AppConstants.ROUTE_CHANGE:
-            RouteStore.changeRouteTo(action.data.newRoute);
+            RouteStore._changeRouteTo(action.data.newRoute);
             break;
     }
 });

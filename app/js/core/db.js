@@ -78,7 +78,7 @@ var DB = {
     // find asks Gaia for the record of kind `kind` and id `id`,
     // handler is a traditional DB handler.
     find: function (kind, id, handler) {
-        Logger.info("DB.find");
+        Logger.debug("DB.find");
 
         Gaia.get(
             Gaia.endpoint(Gaia.Routes.Record),
@@ -104,7 +104,7 @@ var DB = {
     // is treated as a creation. The handler is a traditional
     // DB handler.
     save: function (kind, record, handler) {
-        Logger.info("DB.save");
+        Logger.debug("DB.save");
 
         Gaia.post(
             Gaia.endpoint(Gaia.Routes.Record),
@@ -130,7 +130,7 @@ var DB = {
     // The handler is a traditional DB handler, but recall that
     // the responds is empty for a succesful delete.
     delete: function (kind, id, handler) {
-        Logger.info("DB.delete");
+        Logger.debug("DB.delete");
         Gaia.delete(
             Gaia.endpoint(Gaia.Routes.Record),
             {
@@ -153,7 +153,7 @@ var DB = {
     // query issues a query for a record of kind `kind` and attrs to match
     // against Gaia. Note that the handler is a traditional DB handler
     query: function (kind, attrs, handler) {
-        Logger.info("DB.query");
+        Logger.debug("DB.query");
 
         attrs.kind = kind;
 

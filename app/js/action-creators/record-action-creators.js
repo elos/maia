@@ -8,7 +8,7 @@ var RecordActionCreators = {
     find: function (kind, id) {
         DB.find(kind, id, {
             resolve: function (record) {
-                RecordActions.update(record);
+                RecordActions.update(kind, record);
             },
             error: function (error) {
                 Logger.info("ERR:" + error);

@@ -21,6 +21,7 @@ var Header = require("../components/header");
 var CLI = require("../components/cli");
 var Todos = require("../components/todos");
 var AccountDetails = require("../components/account_details");
+var Map = require("../components/map");
 
 /*
  * "Private" variables and functions can go here
@@ -72,6 +73,9 @@ var Root = React.createClass({
             case RouteConstants.Todos:
                 Component = Todos;
                 break;
+            case RouteConstants.Map:
+                Component = Map;
+                break;
             default:
                 Component = CLI;
                 break;
@@ -89,7 +93,7 @@ var Root = React.createClass({
         }
 
         return (
-                <div class="root">
+                <div className="root">
                     <Header />
                     <Component />
                     <div id="root-snackbar" className="mdl-js-snackbar mdl-snackbar">

@@ -53,6 +53,9 @@ var Header = React.createClass({
             case RouteConstants.Todos:
                 RouteActionCreator.ShowTodos();
                 break;
+            case RouteConstants.Map:
+                RouteActionCreator.ShowMap();
+                break;
         }
     },
 
@@ -60,7 +63,7 @@ var Header = React.createClass({
      * Called every time the state changes
      */
     render: function () {
-        var tabs = ['CLI', 'Todos', 'Account'];
+        var tabs = ['CLI', 'Todos', 'Map', 'Account'];
         var classes = tabs.map(this._isSelected);
         var header = this;
 
@@ -91,13 +94,14 @@ var Header = React.createClass({
         "Account": RouteConstants.AccountDetails,
         "CLI": RouteConstants.CLI,
         "Todos": RouteConstants.Todos,
+        "Map": RouteConstants.Map,
     },
 
     _isSelected: function(tabName) {
         if (this._TabNames[tabName] == this.state.currentRoute) {
-            return "tab-selected mdl-button mdl-button-js mdl-js-ripple-effect";
+            return "tab-selected mdl-button mdl-button-js ";
         } else {
-            return "tab mdl-button mdl-button-js mdl-js-ripple-effect";
+            return "tab mdl-button mdl-button-js";
         }
     }
 

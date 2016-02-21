@@ -4,4 +4,5 @@ module.exports = {
     CLI: "cli",
     Todos: "todos",
     TodosNew: "todos/new",
+    Map: "map",
 };

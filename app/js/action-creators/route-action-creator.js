@@ -13,7 +13,11 @@ var RouteActionCreators = {
 
     ShowTodos: function () {
         RouteActions.changeTo(Routes.Todos);
-    }
+    },
+
+    ShowMap: function () {
+        RouteActions.changeTo(Routes.Map);
+    },
 };
 
 module.exports = RouteActionCreators;

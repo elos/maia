@@ -84,28 +84,28 @@ input[type=submit] {
     padding: 20px;
 }
 
-.todos {
-    margin: auto;
-    padding: 20px;
-    width: 80%;
+#todos-container {
 }
 
-.todos-table {
-    width: 100%;
-}
-
-.todos-title {
+#todos-header {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.todos-title-text {
+#todos-title {
     font-size: 1em;
     line-height: 1em;
     margin: 10px auto;
     font-family: Avenir Next Regular;
 }
+
+
+.todos-table {
+    width: 100%;
+    animation: fade-in ease-out 1s;
+}
+
 
 .cli {
     width: 70%;
@@ -189,4 +189,18 @@ input[type=submit] {
     width: 10px;
     border-radius: 5px;
     animation: pulse-blue 3s ease-in-out 1s infinite;
+}
+
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.map-container {
+    animation: fade-in ease-in 1s;
 }

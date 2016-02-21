@@ -25,7 +25,7 @@ var LogStore = assign({}, EventEmitter.prototype, {
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
     default:
-        Logger.info("LogStore:", action.actionType, action)
+        //Logger.info("LogStore:", action.actionType, action)
   }
 });
 

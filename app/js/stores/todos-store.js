@@ -3,6 +3,7 @@
  */
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
+var moment = require("moment");
 
 /*
  * Require our own modules
@@ -51,8 +52,72 @@ var TodosStore = assign({}, EventEmitter.prototype, {
     },
 
     _recordChange: function () {
-        TodosStore._todos = RecordStore.getAll("task");
+        var todos = RecordStore.getAll("task").map(TodosStore._processTodo);
+        todos.sort(TodosStore.byImportance);
+        TodosStore._todos = todos;
         TodosStore.emitChange();
+    },
+
+    // is in progress, then by deadline;
+    _byImportance: function (a, b) {
+        var ad = new Date(a.deadline);
+        var bd = new Date(b.deadline);
+
+        if (a.in_progress) {
+            if (b.in_progress) {
+                if (ad.getTime() === -62135596800000) {
+                    return 1;
+                }
+
+                return ad.getTime() - bd.getTime();
+            }
+
+            return -1;
+        }
+
+        if (b.in_progress) {
+            return 1;
+        }
+
+        if (ad.getTime() === -62135596800000) {
+            return 1;
+        }
+
+        return ad.getTime() - bd.getTime();
+    },
+
+    // add in_progress, deadline_formatted, and time_spend attributes
+    _processTodo: function (todo) {
+        todo.stages = todo.stages || [];
+
+        todo.in_progress = todo.stages.length % 2 === 1;
+
+        var deadline = new Date(todo.deadline);
+        todo.deadline_formatted = (deadline.getTime() === -62135596800000) ? "None" : deadline.toLocaleString();
+
+        var stages = todo.stages.map(function (stage) {
+            return new Date(stage);
+        });
+
+        if (stages.length % 2 === 1) {
+            stages.push(new Date());
+        }
+
+        var i;
+
+        var msSpent = 0;
+        for (i = 0; i < stages.length;  i += 2) {
+            msSpent += stages[i+1].getTime() - stages[i].getTime();
+        }
+
+        todo.time_spent = (msSpent === 0) ? "" : moment.duration(msSpent).humanize();
+
+        return todo;
+    },
+
+    isCompleted: function (task) {
+        var d = new Date(task.completed_at);
+        return d.getTime() === -62135596800000; // not compelted
     },
 
     _refresh: function (handlers) {
@@ -67,7 +132,6 @@ var TodosStore = assign({}, EventEmitter.prototype, {
                 });
             }
         };
-
         RecordActionCreators.query("task", {}, handlers);
     },
 

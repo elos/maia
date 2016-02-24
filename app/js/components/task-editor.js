@@ -92,6 +92,7 @@ var TaskEditor = React.createClass({
     _todosChange: function () {
         this.setState({
             task: TodosStore.getEditorTarget(),
+            tasks: TodosStore.getTodos().filter(TodosStore.isCompleted),
         });
     },
 
@@ -115,6 +116,7 @@ var TaskEditor = React.createClass({
         return {
             task: TodosStore.getEditorTarget(),
             tags: TagStore.getAllTags(),
+            tasks: TodosStore.getTodos(),
             navigation: "Basic",
         };
     },
@@ -163,13 +165,39 @@ var TaskEditor = React.createClass({
         });
     },
 
+    includePrerequisite: function (task) {
+        var t = this.state.task;
+        t.prerequisites_ids = t.prerequisites_ids || [];
+
+        if (t.prerequisites_ids.indexOf(task.id) === -1) {
+            t.prerequisites_ids.push(task.id);
+        } else {
+            return;
+        }
+
+        this.setState({
+            task: t,
+        });
+    },
+
+    excludePrerequisite: function (task) {
+        var t = this.state.task;
+        t.prerequisites_ids = t.prerequisites_ids || [];
+        t.prerequisites_ids = t.prerequisites_ids.filter(function (t_id) {
+            return t_id !== task.id;
+        });
+
+        this.setState({
+            task: t,
+        });
+    },
 
     /*
      * Called every time the state changes
      */
     render: function () {
-        Logger.info("RENDER", this.state.task);
         var TaskEditor = this;
+
         var Basic = (
                <div style={Style.FormContainer.Form}>
                     <div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style={Style.Input}>
@@ -229,6 +257,37 @@ var TaskEditor = React.createClass({
             );
         }
 
+        var Prereqs;
+
+        if (this.state.tasks === null) {
+            Prereqs = (
+                <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+            );
+        } else {
+            Prereqs = (
+               <div style={Style.FormContainer.Form}>
+                {this.state.tasks.map(function (task) {
+                    return (
+                            <div key={task.id}>
+                                <label className="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" htmlFor={task.id}>
+                                <span className="mdl-checkbox__label">{task.name}</span>
+                                {function () {
+                                    if (TaskEditor.state.task.prerequisites_ids && TaskEditor.state.task.prerequisites_ids.indexOf(task.id) >= 0) {
+                                        return (<input type="checkbox" id={task.id} className="mdl-checkbox__input" checked onClick={TaskEditor.excludePrerequisite.bind(TaskEditor, task)} />);
+                                    } else {
+                                        return (<input type="checkbox" id={task.id} className="mdl-checkbox__input" onClick={TaskEditor.includePrerequisite.bind(TaskEditor, task)} />);
+                                    }
+                                 }()}
+                                </label>
+                            </div>
+                            );
+                    })
+                }
+                </div>
+            );
+        }
+
+
         var Navigation = {
             "Basic": {
                 JSX: Basic,
@@ -245,10 +304,18 @@ var TaskEditor = React.createClass({
                         navigation: "Tags",
                     })
                 }
-            }
+            },
+            "Prereqs": {
+                JSX: Prereqs,
+                Click: function () {
+                    TaskEditor.setState({
+                        navigation: "Prereqs",
+                    });
+                }
+            },
         };
 
-        var NavigationKeys = ["Basic", "Tags"];
+        var NavigationKeys = ["Basic", "Tags", "Prereqs"];
 
         var navigation = this.state.navigation || "Basic";
 

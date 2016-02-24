@@ -128,7 +128,7 @@ var TaskTable = React.createClass({
                                 var name = TagStore.nameForID(id);
                                 if (name && name !== "") {
                                     return (
-                                      <div style={{background: "#CCCCCC", borderRadius: 3, border: "1px solid grey", padding: "0 5px", fontSize: 10, marginRight:3}}>{name}</div>
+                                      <div style={{borderRadius: 3, border: "1px solid #CCCCCC", padding: "0 5px", fontSize: 10, marginRight:3}}>{name}</div>
                                   );
                                 }
                              })}

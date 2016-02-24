@@ -15,9 +15,17 @@ var RouteActionCreators = {
         RouteActions.changeTo(Routes.Todos);
     },
 
+    ShowTodosEditor: function () {
+        RouteActions.changeTo(Routes.TodosEditor);
+    },
+
     ShowMap: function () {
         RouteActions.changeTo(Routes.Map);
     },
+
+    Store: function (key, value) {
+        RouteActions.addState(key, value);
+    }
 };
 
 module.exports = RouteActionCreators;

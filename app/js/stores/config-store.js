@@ -16,6 +16,10 @@ var Cookies = require("../utils/cookies");
  */
 var PublicCredentialKey = "public-credential";
 var PrivateCredentialKey = "private-credential";
+var HostKey = "host";
+
+var DefaultHost = "http://elos.pw";
+
 var ConfigStoreEvents = {
     Changed: "changed"
 };
@@ -60,6 +64,16 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
         return stored;
     },
 
+    getHost: function () {
+        var stored = Cookies.get(HostKey);
+
+        if (stored === null) {
+            return DefaultHost;
+        }
+
+        return stored;
+    },
+
     // --- }}}
 
     // -- Private Methods (_setPublicCredential, _setPrivateCredential, _setCredentials) {{{
@@ -74,6 +88,11 @@ var ConfigStore = assign({}, EventEmitter.prototype, {
     _setCredentials: function (pubCred, priCred) {
         this._setPublicCredential(pubCred);
         this._setPrivateCredential(priCred);
+        this.emitChange();
+    },
+
+    _setHost: function (host) {
+        Cookies.set(HostKey, host);
         this.emitChange();
     }
     // --- }}}
@@ -93,6 +112,9 @@ ConfigStore.dispatchToken = AppDispatcher.register(function (action) {
                     action.data.publicCredential,
                     action.data.privateCredential
             );
+            break;
+        case AppConstants.CONFIG_SET_HOST:
+            ConfigStore._setHost(action.data.host);
             break;
     }
 });

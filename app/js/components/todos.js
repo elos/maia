@@ -19,10 +19,18 @@ var TodosStore = require("../stores/todos-store");
 var MDL = require("../utils/mdl");
 var SnackbarActionCreators = require("../action-creators/snackbar-action-creators.js");
 var TaskTable = require("./task-table");
+var TaskEditor = require("./task-editor");
+var RouteStore = require("../stores/route-store");
+var Routes = require("../constants/route-constants");
 
 /*
  * "Private" variables and functions can go here
  */
+var States = {
+    Loading: 0,
+    Listing: 1,
+    Editing: 2,
+};
 
 var Todos = React.createClass({
 
@@ -30,7 +38,7 @@ var Todos = React.createClass({
      * Called once when the component is mounted
      */
     componentDidMount: function () {
-        TodosStore.addChangeListener(this._onNewChange);
+        RouteStore.addChangeListener(this._onRouteChange);
         TodosActionCreators.refresh();
         MDL.refresh();
     },
@@ -39,7 +47,7 @@ var Todos = React.createClass({
      * Called once when the component is unmounted
      */
     componentWillUnmount: function () {
-        TodosStore.removeChangeListener(this._onNewChange);
+        RouteStore.removeChangeListener(this._onRouteChange);
     },
 
     /*
@@ -55,59 +63,63 @@ var Todos = React.createClass({
      */
     getInitialState: function () {
         return {
-            todos: null,
+            state: this._stateForRoute(RouteStore.getCurrentRoute()),
         };
     },
 
-    completeTodo: function (id) {
-        TodosActionCreators.complete(id);
-    },
-
-    stopTodo: function (id) {
-        TodosActionCreators.stop(id);
-    },
-
-    startTodo: function (id) {
-        TodosActionCreators.start(id);
-    },
-
-    editTask: function (id) {
-        SnackbarActionCreators.showMessage("Not implemented");
-    },
-
-    newTodo: function () {
-        SnackbarActionCreators.showMessage("Not implemented");
+    backClicked: function () {
+        RouteActionCreator.ShowTodos();
     },
 
     /*
      * Called every time the state changes
      */
     render: function () {
-        // We haven't loaded them yet
-        if (this.state.todos === null) {
-            return (
-                <div style={{margin: "200px auto"}} className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
-            );
-        }
-
-        var currentTodos = this.state.todos.filter(TodosStore.isCompleted);
-
         var Todos = this;
+        var SubComponent = TaskTable;
+
+        if (this.state.state === States.Editing) {
+            SubComponent = TaskEditor;
+        }
 
         return (
             <div id="todos-container">
                 <div id="todos-header">
+                    {function () {
+                        if (Todos.state.state === States.Editing) {
+                            return (
+                                <span>
+                                    <button id="back-list-button" style={{marginLeft: 10}}
+                                            className="mdl-button mdl-js-button mdl-button--icon"
+                                            onClick={Todos.backClicked}>
+                                        <i className="material-icons">keyboard_arrow_left</i>
+                                    </button>
+                                    <div className="mdl-tooltip" htmlFor="back-list-button">
+                                        Back to Tasks
+                                    </div>
+                                </span>
+                            );
+                        }
+                     }()}
                     <h2 id="todos-title"> Todos </h2>
-                    <button id="add-task-button" style={{marginRight: 10}}
-                            className="mdl-button mdl-js-button mdl-button--icon"
-                            onClick={Todos.newTodo}>
-                        <i className="material-icons">add</i>
-                    </button>
-                    <div className="mdl-tooltip" htmlFor="add-task-button">
-                        New Task
-                    </div>
+                    {function () {
+                        if (Todos.state.state !== States.Editing) {
+                            return (
+                                <span>
+                                    <button id="add-task-button" style={{marginRight: 10}}
+                                            className="mdl-button mdl-js-button mdl-button--icon"
+                                            onClick={TodosActionCreators.create}>
+                                        <i className="material-icons">add</i>
+                                    </button>
+                                    <div className="mdl-tooltip" htmlFor="add-task-button">
+                                        New Task
+                                    </div>
+                                </span>
+                            );
+                        }
+                     }()}
                 </div>
-                <TaskTable />
+                <SubComponent />
             </div>
         );
     },
@@ -115,9 +127,23 @@ var Todos = React.createClass({
     /*
      * Private functions
      */
-    _onNewChange: function () {
-        this.setState({todos: TodosStore.getTodos()});
-    }
+    _onRouteChange: function () {
+        this.setState({state: this._stateForRoute(RouteStore.getCurrentRoute())});
+    },
+
+    _stateForRoute: function () {
+        switch (RouteStore.getCurrentRoute()) {
+            case Routes.Todos:
+                return States.Listing;
+                break;
+            case Routes.TodosEditor:
+                return States.Editing;
+                break;
+            default:
+                return States.Loading;
+                break;
+        }
+    },
 })
 
 module.exports = Todos;

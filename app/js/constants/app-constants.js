@@ -13,11 +13,13 @@ module.exports = {
      * Config Constants
      */
     CONFIG_UPDATE: "CONFIG_UPDATE",
+    CONFIG_SET_HOST: "CONFIG_SET_HOST",
 
     /*
      * Route Constants
      */
     ROUTE_CHANGE: "ROUTE_CHANGE",
+    ROUTE_STATE_ADD: "ROUTE_STATE_ADD",
 
     /*
      * Record Constants
@@ -35,6 +37,13 @@ module.exports = {
     TODOS_STOP: "TODOS_STOP",
     TODOS_START: "TODOS_START",
     TODOS_DELETE: "TODOS_DELETE",
+    TODOS_SAVE: "TODOS_SAVE",
+    TODOS_EDIT: "TODOS_EDIT",
+
+    /*
+     * Todos Constants
+     */
+    TAG_REFRESH: "TAG_REFRESH",
 
     /*
      * Snackbar Constants

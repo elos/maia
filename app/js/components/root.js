@@ -71,6 +71,7 @@ var Root = React.createClass({
                 Component = AccountDetails;
                 break;
             case RouteConstants.Todos:
+            case RouteConstants.TodosEditor:
                 Component = Todos;
                 break;
             case RouteConstants.Map:
@@ -91,6 +92,33 @@ var Root = React.createClass({
 
             MDL.showSnack("#root-snackbar", this.state.snack);
         }
+        /*
+                <div className="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+                    <header className="mdl-layout__header">
+                    <div className="mdl-layout__header-row">
+                    <span className="mdl-layout-title">Title</span>
+                    <div className="mdl-layout-spacer"></div>
+                    <nav className="mdl-navigation">
+                    <a className="mdl-navigation__link" href="">Link</a>
+                    <a className="mdl-navigation__link" href="">Link</a>
+                    <a className="mdl-navigation__link" href="">Link</a>
+                    <a className="mdl-navigation__link" href="">Link</a>
+                    </nav>
+                    </div>
+                    </header>
+                    <div className="mdl-layout__drawer">
+                    <span className="mdl-layout-title">Title</span>
+                    <nav className="mdl-navigation">
+                    <a className="mdl-navigation__link" href="">Link</a>
+                    <a className="mdl-navigation__link" href="">Link</a>
+                    <a className="mdl-navigation__link" href="">Link</a>
+                    <a className="mdl-navigation__link" href="">Link</a>
+                    </nav>
+                    </div>
+                    <main className="mdl-layout__content">
+                    </main>
+                </div>
+                */
 
         return (
                 <div className="root">
@@ -99,6 +127,15 @@ var Root = React.createClass({
                     <div id="root-snackbar" className="mdl-js-snackbar mdl-snackbar">
                         <div className="mdl-snackbar__text"></div>
                         <button className="mdl-snackbar__action" type="button"></button>
+                    </div>
+                    <div className="mdl-layout__drawer">
+                        <span className="mdl-layout-title">Title</span>
+                        <nav className="mdl-navigation">
+                        <a className="mdl-navigation__link" href="">Link</a>
+                        <a className="mdl-navigation__link" href="">Link</a>
+                        <a className="mdl-navigation__link" href="">Link</a>
+                        <a className="mdl-navigation__link" href="">Link</a>
+                        </nav>
                     </div>
                 </div>
                )

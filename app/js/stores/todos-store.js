@@ -48,13 +48,14 @@ var TodosStore = assign({}, EventEmitter.prototype, {
     // --- }}}
 
     _initialize: function () {
-        RecordStore.addChangeListener(this._recordChange);
+        RecordStore.addKindChangeListener(this._recordChange, "task");
     },
 
     _recordChange: function () {
-        var todos = RecordStore.getAll("task").map(TodosStore._processTodo);
-        todos.sort(TodosStore.byImportance);
-        TodosStore._todos = todos;
+        TodosStore._todos = RecordStore
+                               .getAll("task")
+                               .map(TodosStore._processTodo)
+                               .sort(TodosStore.byImportance);
         TodosStore.emitChange();
     },
 
@@ -135,10 +136,19 @@ var TodosStore = assign({}, EventEmitter.prototype, {
         RecordActionCreators.query("task", {}, handlers);
     },
 
-    _todos: [],
+    _todos: null,
+    _editorTarget: null,
 
     getTodos: function() {
         return this._todos;
+    },
+
+    getEditorTarget: function () {
+        if (this._editorTarget === null) {
+            return {};
+        }
+
+        return this._editorTarget;
     },
 
     _completeTask: function(id) {
@@ -268,6 +278,45 @@ var TodosStore = assign({}, EventEmitter.prototype, {
             },
         });
     },
+
+    _saveTask: function (task) {
+        var prior = null;
+
+        if (task.id) {
+            // this may be null, if we are dealing a new task
+            prior = RecordStore.get("task", task.id);
+        }
+
+        var TodosStore = this;
+        RecordActionCreators.save("task", task, {
+            success: function (record) {
+                SnackbarActionCreators.showMessage("Task saved", {
+                    actionText: "UNDO",
+                    actionHandler: function () {
+                        // revert to prior
+                        if (prior) {
+                            TodosStore._saveTask(prior);
+                            return;
+                        }
+
+                        // delete the task
+                        TodosStore._deleteTask(record.id);
+                    },
+                });
+            },
+            failure: function (error) {
+                SnackbarActionCreators.showMessage("Task couldn't be saved.. " + error, {
+                        actionText: "RETRY",
+                        actionHandler: TodosStore._saveTask.bind(TodosStore, task),
+                });
+            },
+        });
+    },
+
+    _editTask: function (task) {
+        this._editorTarget = task;
+        this.emitChange();
+    },
 });
 
 /*
@@ -298,6 +347,12 @@ AppDispatcher.register(function (action) {
         break;
       case AppConstants.TODOS_DELETE:
         TodosStore._deleteTask(action.data.task_id);
+        break;
+      case AppConstants.TODOS_SAVE:
+        TodosStore._saveTask(action.data.task);
+        break;
+      case AppConstants.TODOS_EDIT:
+        TodosStore._editTask(action.data.task);
         break;
       default:
           /*

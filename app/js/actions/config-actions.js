@@ -10,6 +10,15 @@ var ConfigActions = {
                 privateCredential: privateCredential
             }
         });
+    },
+
+    setHost: function (host) {
+        AppDispatcher.dispatch({
+            actionType: AppConstants.CONFIG_SET_HOST,
+            data: {
+                host: host,
+            }
+        });
     }
 };
 

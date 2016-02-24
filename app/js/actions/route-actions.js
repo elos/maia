@@ -9,6 +9,16 @@ var RouteActions = {
                 newRoute: route,
             }
         });
+    },
+
+    addState: function (key, value) {
+        AppDispatcher.dispatch({
+            actionType: AppConstants.ROUTE_STATE_ADD,
+            data: {
+                key: key,
+                value: value,
+            }
+        });
     }
 };
 

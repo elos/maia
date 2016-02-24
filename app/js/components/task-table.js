@@ -9,14 +9,13 @@ var React = require("react");
 /*
  * Require any local code we need, like stores, utils etc.
  */
-var Logger = require("../utils/logger");
-var CLIStore = require("../stores/cli-store");
-var CLIActionCreator = require("../action-creators/cli-action-creator");
-var RouteActionCreator = require("../action-creators/route-action-creator");
+// Utilities
+var MDL = require("../utils/mdl");
+
 var TodosActionCreators = require("../action-creators/todos-action-creators");
 var TodosStore = require("../stores/todos-store");
-var MDL = require("../utils/mdl");
-var SnackbarActionCreators = require("../action-creators/snackbar-action-creators.js");
+var TagStore = require("../stores/tag-store");
+var TagActionCreators = require("../action-creators/tag-action-creators");
 
 /*
  * "Private" variables and functions can go here
@@ -29,6 +28,8 @@ var TaskTable = React.createClass({
      */
     componentDidMount: function () {
         TodosStore.addChangeListener(this._onNewChange);
+        TagStore.addChangeListener(this._tagChange);
+        TagActionCreators.issueRefresh();
         MDL.refresh();
     },
 
@@ -36,7 +37,12 @@ var TaskTable = React.createClass({
      * Called once when the component is unmounted
      */
     componentWillUnmount: function () {
-        TodosStore.addChangeListener(this._onNewChange);
+        TodosStore.removeChangeListener(this._onNewChange);
+        TagStore.removeChangeListener(this._tagChange);
+    },
+
+    _tagChange: function () {
+        this.forceUpdate();
     },
 
     /*
@@ -117,13 +123,23 @@ var TaskTable = React.createClass({
                           </td>
                           <td className="mdl-data-table__cell--non-numeric">
                             {todo.name}
+                            <div style={{display:"flex", flexDirection: "row"}}>
+                            {todo.tags_ids.map(function (id) {
+                                var name = TagStore.nameForID(id);
+                                if (name && name !== "") {
+                                    return (
+                                      <div style={{background: "#CCCCCC", borderRadius: 3, border: "1px solid grey", padding: "0 5px", fontSize: 10, marginRight:3}}>{name}</div>
+                                  );
+                                }
+                             })}
+                            </div>
                           </td>
                           <td className="mdl-data-table__cell--non-numeric">{todo.deadline_formatted}</td>
                           <td className="mdl-data-table__cell--non-numeric">{todo.time_spent}</td>
                           {/*
                           <td className="mdl-data-table__cell--non-numeric">
                                 <button id={"complete-" + i} className="mdl-button mdl-js-button mdl-button--icon"
-                                        onClick={Todos.completeTodo.bind(null, todo.id)}>
+                                        onClick={TodosActionCreators.complete.bind(null, todo.id)}>
                                     <i className="material-icons">done</i>
                                 </button>
                                 <div className="mdl-tooltip mdl-tooltip--right" htmlFor={"complete-" + i}>
@@ -141,7 +157,7 @@ var TaskTable = React.createClass({
                                     <li className="mdl-menu__item" onClick={TodosActionCreators.complete.bind(null, todo.id)}>
                                         Complete
                                     </li>
-                                    <li className="mdl-menu__item" onClick={TodosActionCreators.edit.bind(null, todo.id)}>
+                                    <li className="mdl-menu__item" onClick={TodosActionCreators.edit.bind(null, todo)}>
                                         Edit
                                     </li>
                                     <li className="mdl-menu__item" onClick={TodosActionCreators.delete.bind(TodosActionCreators, todo.id)}>

@@ -42,6 +42,24 @@ var TodosActions = {
                 task_id: id,
             }
         });
+    },
+
+    saveTask: function (task) {
+        AppDispatcher.dispatch({
+            actionType: AppConstants.TODOS_SAVE,
+            data: {
+                task: task,
+            }
+        });
+    },
+
+    editTask: function (task) {
+        AppDispatcher.dispatch({
+            actionType: AppConstants.TODOS_EDIT,
+            data: {
+                task: task,
+            }
+        });
     }
 };
 

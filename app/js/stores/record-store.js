@@ -23,7 +23,8 @@ var RecordStoreEvents = {
     Delete: "delete",
     Change: "change",
     Push: "push",
-    Pull: "pull"
+    Pull: "pull",
+    KindChange: "kind-change",
 };
 
 
@@ -69,6 +70,18 @@ var RecordStore = assign({}, EventEmitter.prototype, {
         this.removeListener(RecordStoreEvents.Update, callback);
         this.removeListener(RecordStoreEvents.Delete, callback);
         this.removeListener(RecordStoreEvents.Change, callback);
+    },
+
+    emitKindChange: function (kind) {
+        this.emit(RecordStoreEvents.KindChange+kind);
+    },
+
+    addKindChangeListener: function (callback, kind) {
+        this.on(RecordStoreEvents.KindChange+kind, callback);
+    },
+
+    removeKindChangeListener: function (callback, kind) {
+        this.removeListener(RecordStoreEvents.KindChange+kind, callback);
     },
 
     getAll: function(kind) {
@@ -130,148 +143,18 @@ var RecordStore = assign({}, EventEmitter.prototype, {
         return merge;
     },
 
-    _post: function(url, params, data, callback) {
-        Logger.info("RecordStore._post");
-        var xhr = new XMLHttpRequest();
-        url = RecordStore._encode(url, params);
-        xhr.open("POST", url, true, RecordStore.username, RecordStore.password);
-        xhr.setRequestHeader("Authorization", "Basic " + Base64.encode(RecordStore.username + ":" + RecordStore.password));
-        //xhr.setRequestHeader("Content-type", "application/json");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                callback(xhr.status, xhr.responseText);
-            }
-        };
-        xhr.send(JSON.stringify(data));
-    },
-
-    _delete: function(url, params, callback) {
-        Logger.info("RecordStore._delete");
-        var xhr = new XMLHttpRequest();
-
-        xhr.open("DELETE", RecordStore._encode(url, params), true, RecordStore.username, RecordStore.password);
-        //xhr.setRequestHeader("Content-type", "application/json");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                callback(xhr.status, xhr.responseText);
-            }
-        };
-
-        xhr.send(null);
-    },
-
-    _get: function(url, params, callback) {
-        Logger.info("RecordStore._get");
-        var xhr = new XMLHttpRequest();
-
-        xhr.open("GET", RecordStore._encode(url, params), true, RecordStore.username, RecordStore.password);
-        //xhr.setRequestHeader("Content-type", "application/json");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                callback(xhr.status, xhr.responseText);
-            }
-        };
-
-        xhr.send();
-    },
-
-    _find: function (kind, id) {
-        Logger.info("RecordStore._find");
-        RecordStore._get(
-                RecordStore.host + "/record/",
-                {
-                    kind: kind,
-                    id: id,
-                },
-                function (status, responseBody) {
-                    if (status !== 200) {
-                        Logger.info("ERROR: " + status + " " + responseBody);
-                    }
-
-                    var response = JSON.parse(responseBody);
-
-                    RecordStore._merge(RecordStore.records[kind][response.id] || {}, response);
-                    RecordStore.emitChange(RecordStoreEvents.Update);
-                });
-    },
-
-    _save: function (kind, record) {
-        Logger.info("RecordStore._save");
-        RecordStore._post(
-                RecordStore.host + "/record/",
-                {
-                    kind: kind,
-                },
-                record,
-                function (status, responseBody) {
-                    if (status !== 200 && status !== 201) {
-                        Logger.info("ERROR: " + status + " " + responseBody);
-                    }
-
-                    var response = JSON.parse(responseBody);
-
-                    RecordStore._merge(RecordStore.records[kind][response.id] || {}, response);
-                    RecordStore.emitChange(RecordStoreEvents.Update);
-                });
-    },
-
-    _remove: function (kind, record) {
-        Logger.info("RecordStore._remove");
-        RecordStore._delete(
-                RecordStore.host + "/record/",
-                {
-                    kind: kind,
-                    id: record.id,
-                },
-                record,
-                function (status, responseBody) {
-                    if (status !== 200) {
-                        Logger.info("ERROR: " + status + " " + responseBody);
-                    }
-
-                    delete RecordStore.records[kind][record.id];
-                    RecordStore.emitChange(RecordStoreEvents.Delete);
-                });
-    },
-
-    _query: function (kind, attrs) {
-        Logger.info("RecordStore._query");
-        var params = attrs;
-        params.kind = kind;
-        RecordStore._post(
-                RecordStore.host + "/record/query/",
-                params,
-                {},
-                function (status, responseBody) {
-                    if (status !== 200) {
-                        Logger.info("ERROR: " + status + " " + responseBody);
-                    }
-
-                    var results = JSON.parse(responseBody),
-                        i;
-
-                    if (RecordStore.records[kind] === undefined) {
-                        RecordStore.records[kind] = {};
-                    }
-
-                    for (i = 0; i < results.length; i++) {
-                        RecordStore.records[kind][results[i].id] = RecordStore._merge(RecordStore.records[kind][results[i].id] || {}, results[i]);
-                    }
-
-                    RecordStore.emitChange(RecordStoreEvents.Update);
-                });
-    },
-
     _pushRecord: function (kind, record) {
         RecordStore._table(kind)[record.id] = RecordStore._merge(RecordStore._table(kind)[record.id] || {}, record);
         this.emit(RecordStoreEvents.Push);
         this.emit(RecordStoreEvents.Change);
+        this.emitKindChange(kind);
     },
 
     _pullRecord: function (kind, id) {
         delete RecordStore._table(kind)[id];
         this.emit(RecordStoreEvents.Pull);
         this.emit(RecordStoreEvents.Change);
+        this.emitKindChange(kind);
     }
 });
 

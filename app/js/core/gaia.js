@@ -27,6 +27,9 @@ var Gaia = {
     // Routes holds the routes for known gaia endpoints.
     // Note: All Routes should start and end with a '/'
     Routes: {
+        // Register is the route used to create a user account
+        Register: "/register/",
+
         // Record is the primary endpoint for manipulating the elos ontology.
         Record: "/record/",
 
@@ -61,7 +64,7 @@ var Gaia = {
     //      { "kind": "task" },
     //      { ... task object ... },
     //      function (status, responseText) {
-    //          if (status !== 500) {
+    //          if (status !== 200) {
     //              // handle error
     //          } else {
     //              // resolve the callback with something

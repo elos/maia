@@ -50,6 +50,10 @@ var RouteStore = assign({}, EventEmitter.prototype, {
         return this._route;
     },
 
+    getState: function (key) {
+        return window.history.state[key];
+    },
+
     // --- }}}
 
     // --- Private (_route, _initialize(), _changeRouteTo) {{{
@@ -74,9 +78,22 @@ var RouteStore = assign({}, EventEmitter.prototype, {
         this._changeRouteTo(hash.substring(3, hash.length));
     },
 
+    _addState: function (key, value) {
+        var s = window.history.state;
+        s[key] = value;
+
+        window.history.replaceState(
+            s,
+            "",
+            window.location.toString() // stay the same
+        );
+
+        this.emitChange();
+    },
+
     _changeRouteTo: function(r) {
         window.history.pushState(
-            "",  // state??
+            {},  // state??
             r,   // title??
             // the actual url:
             window.location.origin + window.location.pathname + "#!/" + r
@@ -96,6 +113,9 @@ RouteStore.dispatchToken = AppDispatcher.register(function (action) {
     switch (action.actionType) {
         case AppConstants.APP_INITIALIZED:
             RouteStore._initialize();
+            break;
+        case AppConstants.ROUTE_STATE_ADD:
+            RouteStore._addState(action.data.key, action.data.value);
             break;
         case AppConstants.ROUTE_CHANGE:
             RouteStore._changeRouteTo(action.data.newRoute);

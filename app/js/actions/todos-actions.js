@@ -1,5 +1,7 @@
 var AppDispatcher = require("../dispatcher/app-dispatcher");
 var AppConstants = require("../constants/app-constants");
+var RecordActionCreators = require("../action-creators/record-action-creators");
+var ActiveUserStore = require("../stores/active-user-store");
 
 var TodosActions = {
     refreshTasks: function () {
@@ -58,6 +60,26 @@ var TodosActions = {
             actionType: AppConstants.TODOS_EDIT,
             data: {
                 task: task,
+            }
+        });
+    },
+
+    makeGoal: function (task) {
+        RecordActionCreators.save('event', {
+            name: "TASK_MAKE_GOAL",
+            owner_id: ActiveUserStore.getID(),
+            data: {
+                "task_id": task.id,
+            }
+        });
+    },
+
+    dropGoal: function (task) {
+        RecordActionCreators.save('event', {
+            name: "TASK_DROP_GOAL",
+            owner_id: ActiveUserStore.getID(),
+            data: {
+                "task_id": task.id,
             }
         });
     }

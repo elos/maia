@@ -16,6 +16,7 @@ var TodosActionCreators = require("../action-creators/todos-action-creators");
 var TodosStore = require("../stores/todos-store");
 var TagStore = require("../stores/tag-store");
 var TagActionCreators = require("../action-creators/tag-action-creators");
+var Logger = require("../utils/logger");
 
 /*
  * "Private" variables and functions can go here
@@ -157,6 +158,23 @@ var TaskTable = React.createClass({
                                     <li className="mdl-menu__item" onClick={TodosActionCreators.complete.bind(null, todo.id)}>
                                         Complete
                                     </li>
+                                    {function(){
+                                        var tagNames = todo.tags_ids.map(function(id) { return TagStore.nameForID(id); });
+                                        Logger.info(tagNames);
+                                        if (tagNames.indexOf("GOAL") >= 0) {
+                                            return (
+                                            <li className="mdl-menu__item" onClick={TodosActionCreators.dropGoal.bind(null, todo)}>
+                                                Drop Goal
+                                            </li>
+                                            );
+                                        } else {
+                                            return (
+                                            <li className="mdl-menu__item" onClick={TodosActionCreators.goal.bind(null, todo)}>
+                                                Make Goal
+                                            </li>
+                                            );
+                                        }
+                                    }()}
                                     <li className="mdl-menu__item" onClick={TodosActionCreators.edit.bind(null, todo)}>
                                         Edit
                                     </li>

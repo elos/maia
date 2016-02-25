@@ -53,6 +53,14 @@ var TodosActionCreators = {
 
         TodosActions.saveTask(data);
     },
+
+    goal: function (task) {
+        TodosActions.makeGoal(task);
+    },
+
+    dropGoal: function (task) {
+        TodosActions.dropGoal(task);
+    },
 };
 
 module.exports = TodosActionCreators;

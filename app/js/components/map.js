@@ -78,8 +78,7 @@ var Map = React.createClass({
             return (
                 <div style={{flexGrow: 1, height: document.querySelector("body").clientHeight-38, position: "absolute", width: "100vw"}} className="map-container">
                     <GoogleMap
-                        defaultCenter={{lat: 37.459741, lng: -122.172647}}
-                        center={{lat: defaultCenter.latitude, lng: defaultCenter.longitude}}
+                        defaultCenter={{lat: this.state.location.latitude, lng: this.state.location.longitude}}
                         defaultZoom={12}>
                         <div className="current-location" lat={currentLocation.latitude} lng={currentLocation.longitude}> </div>
                         {locations.map(function (l) {
@@ -113,7 +112,7 @@ var Map = React.createClass({
             return;
         }
 
-        if (this.state.location === null) {
+        if (this.state.location === null || this.state.location.id !== l.id) {
             this.setState({
                 location: l,
             })

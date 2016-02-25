@@ -20,6 +20,8 @@ var Root = require("./components/root");
 var DB = require("./core/db");
 var RecordActions = require("./actions/record-actions");
 
+require("./stores/geolocation-store");
+
 Dispatcher.dispatch({
     actionType: Constants.APP_INITIALIZED
 });

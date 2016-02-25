@@ -27,7 +27,6 @@ var RecordStoreEvents = {
     KindChange: "kind-change",
 };
 
-
 /*
  * RecordStore
  *  - Watches all record events and persists them to server.

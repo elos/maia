@@ -90,9 +90,20 @@ var TaskEditor = React.createClass({
     },
 
     _todosChange: function () {
+        var target = TodosStore.getEditorTarget();
+
+        var tasks = TodosStore.getTodos();
+        if (tasks !== null) {
+            tasks = tasks.filter(TodosStore.isCompleted);
+        }
+
+        if (target !== null && target.id) {
+            tasks = tasks.filter(function (task) { return task.id !== target.id; });
+        }
+
         this.setState({
-            task: TodosStore.getEditorTarget(),
-            tasks: TodosStore.getTodos().filter(TodosStore.isCompleted),
+            task: target,
+            tasks: tasks,
         });
     },
 
@@ -113,10 +124,21 @@ var TaskEditor = React.createClass({
      * Called once before componentDidMount to set the initial component state.
      */
     getInitialState: function () {
+        var target = TodosStore.getEditorTarget();
+
+        var tasks = TodosStore.getTodos();
+        if (tasks !== null) {
+            tasks = tasks.filter(TodosStore.isCompleted);
+        }
+
+        if (target !== null && target.id) {
+            tasks = tasks.filter(function (task) { return task.id !== target.id; });
+        }
+
         return {
-            task: TodosStore.getEditorTarget(),
+            task: target,
             tags: TagStore.getAllTags(),
-            tasks: TodosStore.getTodos(),
+            tasks: tasks,
             navigation: "Basic",
         };
     },
@@ -324,7 +346,27 @@ var TaskEditor = React.createClass({
         return (
             <div id="task-editor" className="mdl-card mdl-shadow--2dp" style={Style.Container}>
                 <div className="mdl-card__title">
-                    <h2 className="mdl-card__title-text">Task Editor</h2>
+                    <h2 className="mdl-card__title-text">
+                    {function (task) {
+                        if (task === null) {
+                            return "";
+                        }
+
+                        if (!task.id) {
+                            if (task.name && task.name.length > 0) {
+                                return "New Task: \"" + task.name + "\"";
+                            } else {
+                                return "New Task";
+                            }
+                        } else {
+                            if (task.name && task.name.length > 0) {
+                                return "Editing Task: \"" + task.name + "\"";
+                            } else {
+                                return "Editing Task";
+                            }
+                        }
+                     }(this.state.task)}
+                    </h2>
                 </div>
                <div className="mdl-card__supporting-text" style={Style.FormContainer}>
                     <div style={Style.FormContainer.FormNavigation}>

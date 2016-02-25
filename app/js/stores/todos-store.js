@@ -15,6 +15,7 @@ var RecordStore = require("../stores/record-store");
 var RecordActionCreators = require("../action-creators/record-action-creators");
 var SnackbarActionCreators = require("../action-creators/snackbar-action-creators");
 var RouteActionCreators = require("../action-creators/route-action-creator");
+var RouteStore = require("../stores/route-store");
 var Logger = require("../utils/logger");
 
 var DB = require("../core/db");
@@ -49,6 +50,7 @@ var TodosStore = assign({}, EventEmitter.prototype, {
 
     _initialize: function () {
         RecordStore.addKindChangeListener(this._recordChange, "task");
+        RouteStore.addChangeListener(this._routeChange);
     },
 
     _recordChange: function () {
@@ -57,6 +59,9 @@ var TodosStore = assign({}, EventEmitter.prototype, {
                                .map(TodosStore._processTodo)
                                .sort(TodosStore.byImportance);
         TodosStore.emitChange();
+    },
+
+    _routeChange: function () {
     },
 
     // is in progress, then by deadline;

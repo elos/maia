@@ -14,12 +14,15 @@ var Logger = require("../utils/logger");
 var CLIStore = require("../stores/cli-store");
 var CLIActionCreator = require("../action-creators/cli-action-creator");
 var RouteActionCreator = require("../action-creators/route-action-creator");
+var RecordActionCreators = require("../action-creators/record-action-creators");
+var TodosActions = require("../actions/todos-actions");
 var TodosActionCreators = require("../action-creators/todos-action-creators");
 var TodosStore = require("../stores/todos-store");
 var TagActionCreators = require("../action-creators/tag-action-creators");
 var TagStore = require("../stores/tag-store");
 var MDL = require("../utils/mdl");
 var SnackbarActionCreators = require("../action-creators/snackbar-action-creators.js");
+var RouteStore = require("../stores/route-store");
 
 /*
  * "Private" variables and functions can go here
@@ -79,6 +82,7 @@ var TaskEditor = React.createClass({
         TodosStore.addChangeListener(this._todosChange);
         TagStore.addChangeListener(this._tagChange);
         TagActionCreators.issueRefresh();
+        RouteStore.addChangeListener(this._routeChange);
     },
 
     /*
@@ -87,6 +91,7 @@ var TaskEditor = React.createClass({
     componentWillUnmount: function () {
         TodosStore.removeChangeListener(this._todosChange);
         TagStore.removeChangeListener(this._tagChange);
+        RouteStore.removeChangeListener(this._routeChange);
     },
 
     _todosChange: function () {
@@ -113,6 +118,24 @@ var TaskEditor = React.createClass({
         });
     },
 
+    _routeChange: function () {
+        var id = RouteStore.getState("task_id");
+
+        if (!id) {
+            return;
+        }
+
+        console.log(id);
+
+        if (id && (!this.state.task || !this.state.task.id || this.state.task.id.length === 0)) {
+            RecordActionCreators.find('task', id, {
+                success: function (record) {
+                    TodosAction.editTask(task);
+                }
+            });
+        }
+    },
+
     /*
      * Called when the compoenent's changes are flushed to the DOM
      */
@@ -124,6 +147,17 @@ var TaskEditor = React.createClass({
      * Called once before componentDidMount to set the initial component state.
      */
     getInitialState: function () {
+        var id = RouteStore.getState("task_id");
+
+        if (id) {
+            RecordActionCreators.find('task', id, {
+                success: function (record) {
+                    Logger.info(record);
+                    TodosActionCreators.edit(record);
+                }
+            });
+        }
+
         var target = TodosStore.getEditorTarget();
 
         var tasks = TodosStore.getTodos();
@@ -213,6 +247,7 @@ var TaskEditor = React.createClass({
             task: t,
         });
     },
+        // --- render {{{
 
     /*
      * Called every time the state changes
@@ -427,6 +462,8 @@ var TaskEditor = React.createClass({
             </div>
         );
     },
+
+        // --- }}}
 
     start: function () {
     },

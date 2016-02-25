@@ -22,6 +22,7 @@ var TodosActionCreators = {
     edit: function (task) {
         TodosActions.editTask(task);
         RouteActionCreator.ShowTodosEditor();
+        RouteActionCreator.Store("task_id", task.id);
     },
 
     create: function () {

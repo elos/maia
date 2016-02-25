@@ -47,11 +47,21 @@ var RouteStore = assign({}, EventEmitter.prototype, {
 
     // Current route as managed by the RouteStore
     getCurrentRoute: function() {
-        return this._route;
+        if (this._route.indexOf("?") === -1) {
+            return this._route;
+        }
+
+        return this._route.substr(0, this._route.indexOf("?"));
     },
 
     getState: function (key) {
-        return window.history.state[key];
+        var s = this._getState();
+
+        if (s[key] === undefined) {
+            return null;
+        }
+
+        return s[key];
     },
 
     // --- }}}
@@ -65,33 +75,44 @@ var RouteStore = assign({}, EventEmitter.prototype, {
     _initialize: function () {
         // Get the current route, the hash : '#!/foo/bar'
         // is used for web apps to put state in the URL
+        // it eliminates the query parameter (which is state);
         var hash = window.location.hash;
+        var route = hash;
+        if (hash.indexOf("?") >= 0) {
+            route = hash.substr(0, hash.indexOf("?"));
+        }
 
         // if it's empty or base, redirect to our landing
-        if (hash.length === 0 || hash.length === "#!/") {
+        if (route.length === 0 || route.length === "#!/") {
             this._changeRouteTo(this.Landing);
             return;
         }
 
+        var s = this._getState();
+
         // otherwise we want to transition to the screen
         // represented by the route given there.
-        this._changeRouteTo(hash.substring(3, hash.length));
+        this._changeRouteTo(route.substring(3, route.length));
+        this._putState(s);
     },
 
     _addState: function (key, value) {
-        var s = window.history.state;
+        console.log("ADD SATE");
+        var s = this._getState();
         s[key] = value;
-
-        window.history.replaceState(
-            s,
-            "",
-            window.location.toString() // stay the same
-        );
-
-        this.emitChange();
+        this._putState(s);
     },
 
     _changeRouteTo: function(r) {
+        // need to maintain state
+        /* don't preserver query
+        var hash = window.location.hash;
+        var query = "";
+        if (hash.indexOf("?") >= 0) {
+            query = hash.substr(hash.indexOf("?"));
+        }
+        */
+
         window.history.pushState(
             {},  // state??
             r,   // title??
@@ -101,7 +122,65 @@ var RouteStore = assign({}, EventEmitter.prototype, {
 
         this._route = r;
         this.emitChange();
-    }
+    },
+
+    _getState: function () {
+        var hash = window.location.hash;
+
+        if (hash.indexOf("?") === -1) {
+            return {};
+        }
+
+        // then remove the ?
+        var query = hash.substr(hash.indexOf("?")).substr(1);
+
+        var parts = query.split("&");
+
+        var state = {};
+
+        for (var i = 0; i < parts.length; i++) {
+            var item = parts[i].split("=");
+            state[item[0]] = decodeURIComponent(item[1]);
+        }
+
+        return state;
+    },
+
+    _putState: function (s) {
+        var url = window.location.toString();
+
+        if (url.indexOf("?") === -1) {
+            url += "?"
+        } else {
+            url = url.substr(0, url.indexOf("?")) + "?";
+        }
+
+        var needsUpdate = false;
+
+        for (key in s) {
+            if (s.hasOwnProperty(key)) {
+                var val = s[key];
+                if (val === null || val === undefined) {
+                    continue;
+                }
+
+                needsUpdate = true;
+                url = url + key + "=" + encodeURIComponent(s[key]) + "&";
+            }
+        }
+
+        if (!needsUpdate) {
+            return;
+        }
+
+        window.history.replaceState(
+            s,
+            "",
+            url
+        );
+
+        this.emitChange();
+    },
 
     // --- }}}
 });

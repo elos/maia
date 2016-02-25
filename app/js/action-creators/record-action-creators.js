@@ -5,13 +5,20 @@ var RecordActions = require ("../actions/record-actions");
 
 var RecordActionCreators = {
 
-    find: function (kind, id) {
+    find: function (kind, id, handlers) {
+        // optional args
+        handlers = handlers || {};
+        handlers.success = handlers.success || function() {};
+        handlers.failure = handlers.failure || function() {};
+
         DB.find(kind, id, {
             resolve: function (record) {
                 RecordActions.update(kind, record);
+                handlers.success(record);
             },
             error: function (error) {
                 Logger.info("ERR:" + error);
+                handlers.failure(error);
             },
         });
     },

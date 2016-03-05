@@ -32,11 +32,13 @@ var Map = React.createClass({
             }
         });
 
+        /* stupid inefficient
         RecordActionCreators.query("location", {}, {
             failure: function (error ) {
                 SnackbarActionCreators.showMessage("Error loading location information: " + error);
             }
         });
+        */
     },
 
     /*

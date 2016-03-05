@@ -14,10 +14,12 @@
     "flux": "^2.1.1",
     "google-map-react": "^0.10.5",
     "history": "^1.13.0",
+    "material-ui": "^0.15.0-alpha.1",
     "moment": "^2.11.2",
     "object-assign": "^4.0.1",
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
+    "react-tap-event-plugin": "^0.2.1",
     "reactify": "^1.1.1",
     "vinyl-source-stream": "^1.1.0",
     "yargs": "^3.29.0"

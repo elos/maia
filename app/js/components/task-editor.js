@@ -6,6 +6,9 @@
  */
 var React = require("react");
 var moment = require("moment");
+var DatePicker = require('material-ui/lib/date-picker/date-picker');
+var TextField = require("material-ui/lib/text-field");
+var TimePicker = require('material-ui/lib/time-picker/time-picker');
 
 /*
  * Require any local code we need, like stores, utils etc.
@@ -257,30 +260,17 @@ var TaskEditor = React.createClass({
 
         var Basic = (
                <div style={Style.FormContainer.Form}>
-                    <div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style={Style.Input}>
-                        <input className="mdl-textfield__input"
-                               type="text"
-                               id="name"
-                               value={this.state.task.name}
-                               onChange={this.nameChange} />
-                        <label className="mdl-textfield__label" htmlFor="name">Name...</label>
-                    </div>
-                    <div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style={Style.Input}>
-                        <input className="mdl-textfield__input"
-                               type="date"
-                               id="deadline-date"
-                               value={(this.state.task.deadline) ? moment(this.state.task.deadline).format("YYYY-MM-DD") : ""}
-                               onChange={this.deadlineDateChange} />
-                        <label className="mdl-textfield__label" htmlFor="deadline-date">Deadline Date...</label>
-                    </div>
-                    <div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style={Style.Input}>
-                        <input className="mdl-textfield__input"
-                               type="time"
-                               id="deadline-time"
-                               value={(this.state.task.deadline) ? moment(this.state.task.deadline).format("HH:MM") : ""}
-                               onChange={this.deadlineTimeChange} />
-                        <label className="mdl-textfield__label" htmlFor="deadline-time">Deadline Time...</label>
-                    </div>
+                   <TextField
+                       floatingLabelText="Name..."
+                       value={this.state.task.name}
+                       onChange={this.nameChange}
+                   />
+                   <DatePicker
+                       hintText="Portrait Dialog"
+                    />
+                    <TimePicker
+                        hintText="12hr Format"
+                    />
                 </div>
             );
 

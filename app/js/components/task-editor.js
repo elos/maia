@@ -9,6 +9,7 @@ var moment = require("moment");
 var DatePicker = require('material-ui/lib/date-picker/date-picker');
 var TextField = require("material-ui/lib/text-field");
 var TimePicker = require('material-ui/lib/time-picker/time-picker');
+var LinearProgress = require('material-ui/lib/linear-progress');
 
 /*
  * Require any local code we need, like stores, utils etc.
@@ -133,7 +134,7 @@ var TaskEditor = React.createClass({
         if (id && (!this.state.task || !this.state.task.id || this.state.task.id.length === 0)) {
             RecordActionCreators.find('task', id, {
                 success: function (record) {
-                    TodosAction.editTask(task);
+                    TodosActions.editTask(record);
                 }
             });
         }
@@ -250,6 +251,29 @@ var TaskEditor = React.createClass({
             task: t,
         });
     },
+
+    newDeadlineDate: function(_, newDate) {
+        if (this.state.task.deadline) {
+            newDate.setHours(this.state.task.deadline.getHours());
+            newDate.setMinutes(this.state.task.deadline.getMinutes());
+        }
+
+        var t = Object.assign({}, this.state.task);
+        t.deadline = newDate;
+
+        this.setState({
+            task: t,
+        });
+    },
+
+    newDeadlineTime: function(_, newTime) {
+        var t = Object.assign({}, this.state.task);
+        t.deadline.setHours(newTime.getHours());
+        t.deadline.setMinutes(newTime.getMinutes());
+        this.setState({
+            task: t,
+        });
+    },
         // --- render {{{
 
     /*
@@ -266,10 +290,15 @@ var TaskEditor = React.createClass({
                        onChange={this.nameChange}
                    />
                    <DatePicker
-                       hintText="Portrait Dialog"
+                       minDate={new Date()}
+                       value={this.state.task.deadline}
+                       onChange={this.newDeadlineDate}
+                       hintText="Deadline Date"
                     />
                     <TimePicker
-                        hintText="12hr Format"
+                       value={this.state.task.deadline}
+                       onChange={this.newDeadlineTime}
+                       hintText="Deadline Time"
                     />
                 </div>
             );
@@ -308,7 +337,7 @@ var TaskEditor = React.createClass({
 
         if (this.state.tasks === null) {
             Prereqs = (
-                <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+                <LinearProgress mode="indeterminate"/>
             );
         } else {
             Prereqs = (

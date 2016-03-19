@@ -3,15 +3,18 @@
  */
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
+var Immutable = require("immutable");
 
 /*
  * Require our own modules
  */
 var AppDispatcher = require("../dispatcher/app-dispatcher");
 var AppConstants = require("../constants/app-constants");
-var ConfigStore = require("../stores/config-store");
 var Logger = require("../utils/logger");
 var Base64 = require("../utils/base64");
+var record_reducer = require('./record/record_reducer');
+var record_actions = require('./record/record_actions');
+
 
 /*
  * Private variables and functions can go here
@@ -32,10 +35,8 @@ var RecordStoreEvents = {
  *  - Watches all record events and persists them to server.
  */
 var RecordStore = assign({}, EventEmitter.prototype, {
-    host: "http://elos.pw",
-    username: undefined,
-    password: undefined,
     records: {},
+    state: null,
     _table: function (kind) {
         if (this.records[kind] === undefined) {
             this.records[kind] = {};
@@ -45,14 +46,7 @@ var RecordStore = assign({}, EventEmitter.prototype, {
     },
 
     initialize: function() {
-        ConfigStore.addChangeListener(this._configChanged);
-        // update
-        this._configChanged();
-    },
-
-    _configChanged: function () {
-        RecordStore.username = ConfigStore.getPublicCredential();
-        RecordStore.password = ConfigStore.getPrivateCredential();
+        //this.state = record_reducer(this.state, AppConstants.APP_INITIALIZE);
     },
 
     emitChange: function (changeType) {
@@ -111,18 +105,6 @@ var RecordStore = assign({}, EventEmitter.prototype, {
         return bucket[id] || null;
     },
 
-    _encode: function (url, params) {
-        var key;
-
-        url = url + "?";
-        for (key in params) {
-           if (params.hasOwnProperty(key)) {
-                  url = url + key + "=" + encodeURIComponent(params[key]) + "&";
-            }
-        }
-        return url;
-    },
-
       // merge two into one
     _merge: function(one, two) {
         var merge = {},
@@ -154,7 +136,12 @@ var RecordStore = assign({}, EventEmitter.prototype, {
         this.emit(RecordStoreEvents.Pull);
         this.emit(RecordStoreEvents.Change);
         this.emitKindChange(kind);
-    }
+    },
+
+    dispatch: function (action) {
+        this.state = record_reducer(this.state, action);
+    },
+
 });
 
 /*
@@ -163,14 +150,15 @@ var RecordStore = assign({}, EventEmitter.prototype, {
 RecordStore.dispatchToken = AppDispatcher.register(function (action) {
     switch (action.actionType) {
         case AppConstants.APP_INITIALIZED:
-            AppDispatcher.waitFor([ConfigStore.dispatchToken]);
             RecordStore.initialize();
             break;
         case AppConstants.RECORD_UPDATE:
             RecordStore._pushRecord(action.data.kind, action.data.record);
+            RecordStore.dispatch(record_actions.update(action.data.kind, action.data.record));
             break;
         case AppConstants.RECORD_DELETE:
             RecordStore._pullRecord(action.data.kind, action.data.record.id);
+            RecordStore.dispatch(record_actions.delete(action.data.kind, action.data.record));
             break;
     }
 });

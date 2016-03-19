@@ -90,6 +90,7 @@ gulp.task("compile-external-js", function () {
 	.require("events")
     .require("react-tap-event-plugin")
     .require("material-ui")
+    .require("immutable")
     .require("react-addons-transition-group") //https://github.com/callemall/material-ui/issues/2818 felipethome is such a homie
     .bundle()
     .pipe(source("vendors.js"))
@@ -134,6 +135,7 @@ function compileJS() {
 	.external("events")
     .external("react-tap-event-plugin")
     .external("material-ui")
+    .external("immutable")
     .external("react-addons-transition-group")
     .bundle()
     .pipe(source("main.js"))

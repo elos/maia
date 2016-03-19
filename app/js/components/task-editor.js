@@ -10,6 +10,15 @@ var DatePicker = require('material-ui/lib/date-picker/date-picker');
 var TextField = require("material-ui/lib/text-field");
 var TimePicker = require('material-ui/lib/time-picker/time-picker');
 var LinearProgress = require('material-ui/lib/linear-progress');
+var List = require('material-ui/lib/lists/list');
+var ListItem = require('material-ui/lib/lists/list-item');
+var Checkbox = require('material-ui/lib/checkbox');
+var Paper = require('material-ui/lib/paper');
+var Card = require('material-ui/lib/card/card');
+var CardTitle = require('material-ui/lib/card/card-title');
+var FlatButton = require('material-ui/lib/flat-button');
+var CardActions = require('material-ui/lib/card/card-actions');
+
 
 /*
  * Require any local code we need, like stores, utils etc.
@@ -312,24 +321,26 @@ var TaskEditor = React.createClass({
         } else {
             Tags = (
                <div style={Style.FormContainer.Form}>
-                {this.state.tags.map(function (tag) {
-                    return (
-                            <div key={tag.id}>
-                                <label className="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" htmlFor={tag.id}>
-                                <span className="mdl-checkbox__label">{tag.name}</span>
-                                {function () {
-                                    if (TaskEditor.state.task.tags_ids && TaskEditor.state.task.tags_ids.indexOf(tag.id) >= 0) {
-                                        return (<input type="checkbox" id={tag.id} className="mdl-checkbox__input" checked onClick={TaskEditor.excludeTag.bind(TaskEditor, tag)} />);
-                                    } else {
-                                        return (<input type="checkbox" id={tag.id} className="mdl-checkbox__input" onClick={TaskEditor.includeTag.bind(TaskEditor, tag)} />);
-                                    }
-                                 }()}
-                                </label>
-                            </div>
-                            );
-                    })
-                }
-                </div>
+                   <List>
+                   {this.state.tags.map(function (tag) {
+                       return (
+                           <ListItem
+                               leftCheckbox={<Checkbox onClick={function() {
+                                   if (TaskEditor.state.task.tags_ids && TaskEditor.state.task.tags_ids.indexOf(tag.id) >= 0) {
+                                       TaskEditor.excludeTag(tag);
+                                   } else {
+                                       TaskEditor.includeTag(tag);
+                                   }
+                               }}
+                               checked={TaskEditor.state.task.tags_ids && TaskEditor.state.task.tags_ids.indexOf(tag.id) >= 0}
+                               />}
+                               primaryText={tag.name}
+                               key={tag.id}
+                           />
+                        )
+                   })}
+                   </List>
+               </div>
             );
         }
 
@@ -342,23 +353,25 @@ var TaskEditor = React.createClass({
         } else {
             Prereqs = (
                <div style={Style.FormContainer.Form}>
-                {this.state.tasks.map(function (task) {
-                    return (
-                            <div key={task.id}>
-                                <label className="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" htmlFor={task.id}>
-                                <span className="mdl-checkbox__label">{task.name}</span>
-                                {function () {
-                                    if (TaskEditor.state.task.prerequisites_ids && TaskEditor.state.task.prerequisites_ids.indexOf(task.id) >= 0) {
-                                        return (<input type="checkbox" id={task.id} className="mdl-checkbox__input" checked onClick={TaskEditor.excludePrerequisite.bind(TaskEditor, task)} />);
-                                    } else {
-                                        return (<input type="checkbox" id={task.id} className="mdl-checkbox__input" onClick={TaskEditor.includePrerequisite.bind(TaskEditor, task)} />);
-                                    }
-                                 }()}
-                                </label>
-                            </div>
-                            );
-                    })
-                }
+                   <List>
+                   {this.state.tasks.map(function (task) {
+                       return (
+                           <ListItem
+                               leftCheckbox={<Checkbox onClick={function() {
+                                   if (TaskEditor.state.task.prerequisites_ids && TaskEditor.state.task.prerequisites_ids.indexOf(task.id) >= 0) {
+                                       TaskEditor.excludePrerequisite(task);
+                                   } else {
+                                       TaskEditor.includePrerequisite(task);
+                                   }
+                               }}
+                               checked={TaskEditor.state.task.prerequisites_ids && TaskEditor.state.task.prerequisites_ids.indexOf(task.id) >= 0}
+                               />}
+                               primaryText={task.name}
+                               key={task.id}
+                           />
+                        )
+                   })}
+                   </List>
                 </div>
             );
         }
@@ -398,10 +411,10 @@ var TaskEditor = React.createClass({
         var NavigationContent = Navigation[navigation];
 
         return (
-            <div id="task-editor" className="mdl-card mdl-shadow--2dp" style={Style.Container}>
-                <div className="mdl-card__title">
-                    <h2 className="mdl-card__title-text">
-                    {function (task) {
+
+                <Card style={Style.Container} zDepth={1}>
+                    <div>
+                    <CardTitle title={function (task) {
                         if (task === null) {
                             return "";
                         }
@@ -420,69 +433,58 @@ var TaskEditor = React.createClass({
                             }
                         }
                      }(this.state.task)}
-                    </h2>
-                </div>
-               <div className="mdl-card__supporting-text" style={Style.FormContainer}>
-                    <div style={Style.FormContainer.FormNavigation}>
-                        <ul style={Style.FormContainer.FormNavigation.List}>
-                            {NavigationKeys.map(function (key) {
-                               return (
-                                       <li key={key}
-                                           style={
-                                               function () {
-                                                   if (navigation === key) {
-                                                       var style = Style.FormContainer.FormNavigation.List.ItemSelected;
-                                                       for (k in Style.FormContainer.FormNavigation.List.Item) {
-                                                           if (!style[k]) {
-                                                               style[k] = Style.FormContainer.FormNavigation.List.Item[k];
+                    />
+
+                   <div style={Style.FormContainer}>
+                        <div style={Style.FormContainer.FormNavigation}>
+                            <ul style={Style.FormContainer.FormNavigation.List}>
+                                {NavigationKeys.map(function (key) {
+                                   return (
+                                           <li key={key}
+                                               style={
+                                                   function () {
+                                                       if (navigation === key) {
+                                                           var style = Style.FormContainer.FormNavigation.List.ItemSelected;
+                                                           for (k in Style.FormContainer.FormNavigation.List.Item) {
+                                                               if (!style[k]) {
+                                                                   style[k] = Style.FormContainer.FormNavigation.List.Item[k];
+                                                               }
                                                            }
+                                                           return style;
+                                                       } else {
+                                                           return Style.FormContainer.FormNavigation.List.Item;
                                                        }
-                                                       return style;
-                                                   } else {
-                                                       return Style.FormContainer.FormNavigation.List.Item;
-                                                   }
-                                               }()
-                                           }
-                                           onClick={Navigation[key].Click}>
-                                           {key}
-                                       </li> );
-                            })}
-                        </ul>
+                                                   }()
+                                               }
+                                               onClick={Navigation[key].Click}>
+                                               {key}
+                                           </li> );
+                                })}
+                            </ul>
+                        </div>
+                        {NavigationContent.JSX}
                     </div>
-                    {NavigationContent.JSX}
+
+                    <CardActions>
+                        {function() {
+                            if (TaskEditor.state.task.id && false) {
+                                return (<span>
+                                    <FlatButton label="Start" onTouchStart={TaskEditor.start}/>
+                                    <FlatButton label="Complete" onTouchStart={TaskEditor.complete}/>
+                                    <FlatButton label="Make Goal" onTouchStart={TaskEditor.goal}/>
+                                </span>);
+                            } else {
+                                return (<span></span>);
+                            }
+                        }()}
+                        <FlatButton label="Save" onClick={TaskEditor.submit} onTouchStart={TaskEditor.submit} />
+                    </CardActions>
                 </div>
-                <div className="mdl-card__actions mdl-card--border">
-                    {function() {
-                        if (TaskEditor.state.task.id && false) {
-                            return (<span>
-                                <a className="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-                                   onClick={TaskEditor.start}>
-                                    Start
-                                </a>
-                                <a className="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-                                   onClick={TaskEditor.complete}>
-                                    Complete
-                                </a>
-                                <a className="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-                                   onClick={TaskEditor.goal}>
-                                    Make Goal
-                                </a>
-                            </span>);
-                        } else {
-                            return (<span></span>);
-                        }
-                    }()}
-                    <a className="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-                       onClick={this.submit}
-                        style={Style.Button}>
-                        Save
-                    </a>
-                </div>
-            </div>
+                </Card>
         );
     },
 
-        // --- }}}
+    // --- }}}
 
     start: function () {
     },

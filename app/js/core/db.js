@@ -4,7 +4,7 @@ var Gaia = require("./gaia");
 
 /*
  * DB is an interface for communicating with a Gaia-backed elos ontology. That
- * is to say that DB issues requests over the server in order to fulfill it's methods
+ * is to say that DB issues requests to the server in order to fulfill it's methods,
  * but it encapsulates the necessary information to make these requests to Gaia.
  *
  * Use DB to manipulate the elos data ontology.

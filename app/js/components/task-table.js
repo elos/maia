@@ -16,6 +16,12 @@ var TodosActionCreators = require("../action-creators/todos-action-creators");
 var TodosStore = require("../stores/todos-store");
 var TagStore = require("../stores/tag-store");
 var TagActionCreators = require("../action-creators/tag-action-creators");
+var Table = require("material-ui/lib/table/table");
+var TableHeaderColumn =require( 'material-ui/lib/table/table-header-column');
+var TableRow =require( 'material-ui/lib/table/table-row');
+var TableHeader=require( 'material-ui/lib/table/table-header');
+var TableRowColumn =require( 'material-ui/lib/table/table-row-column');
+var TableBody =require( 'material-ui/lib/table/table-body');
 
 /*
  * "Private" variables and functions can go here
@@ -77,21 +83,21 @@ var TaskTable = React.createClass({
         var Todos = this;
 
         return (
-            <table className="todos-table mdl-data-table mdl-js-data-table">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th className="mdl-data-table__cell--non-numeric">Name</th>
-                  <th className="mdl-data-table__cell--non-numeric">Deadline</th>
-                  <th className="mdl-data-table__cell--non-numeric">Time Spent</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table selectable={false}>
+              <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
+                <TableRow>
+                  <TableHeaderColumn></TableHeaderColumn>
+                  <TableHeaderColumn>Name</TableHeaderColumn>
+                  <TableHeaderColumn>Deadline</TableHeaderColumn>
+                  <TableHeaderColumn>Time Spent</TableHeaderColumn>
+                  <TableHeaderColumn></TableHeaderColumn>
+                </TableRow>
+              </TableHeader>
+              <TableBody selectable={false} displayRowCheckbox={false}>
                 {tasks.map(function(todo) {
                     return (
-                        <tr key={todo.id} className={(todo.in_progress) ? "todo-in-progress":""}>
-                          <td>
+                        <TableRow key={todo.id} className={(todo.in_progress) ? "todo-in-progress":""}>
+                          <TableRowColumn>
                             {function () {
                                 if (!todo.in_progress) {
                                     return (
@@ -120,8 +126,8 @@ var TaskTable = React.createClass({
                                 }
                              }()
                             }
-                          </td>
-                          <td className="mdl-data-table__cell--non-numeric">
+                          </TableRowColumn>
+                          <TableRowColumn className="mdl-data-table__cell--non-numeric">
                             {todo.name}
                             <div style={{display:"flex", flexDirection: "row"}}>
                             {todo.tags_ids.map(function (id) {
@@ -133,11 +139,11 @@ var TaskTable = React.createClass({
                                 }
                              })}
                             </div>
-                          </td>
-                          <td className="mdl-data-table__cell--non-numeric">{todo.deadline_formatted}</td>
-                          <td className="mdl-data-table__cell--non-numeric">{todo.time_spent}</td>
+                          </TableRowColumn>
+                          <TableRowColumn className="mdl-data-table__cell--non-numeric">{todo.deadline_formatted}</TableRowColumn>
+                          <TableRowColumn className="mdl-data-table__cell--non-numeric">{todo.time_spent}</TableRowColumn>
                           {/*
-                          <td className="mdl-data-table__cell--non-numeric">
+                          <TableRowColumn className="mdl-data-table__cell--non-numeric">
                                 <button id={"complete-" + i} className="mdl-button mdl-js-button mdl-button--icon"
                                         onClick={TodosActionCreators.complete.bind(null, todo.id)}>
                                     <i className="material-icons">done</i>
@@ -145,8 +151,8 @@ var TaskTable = React.createClass({
                                 <div className="mdl-tooltip mdl-tooltip--right" htmlFor={"complete-" + i}>
                                     Complete
                                 </div>
-                            </td> */}
-                            <td>
+                            </TableRowColumn> */}
+                            <TableRowColumn>
                                 <button id={todo.id + "-action-menu"} className="mdl-button mdl-js-button mdl-button--icon">
                                     <i className="material-icons">more_vert</i>
                                 </button>
@@ -180,12 +186,12 @@ var TaskTable = React.createClass({
                                         Delete
                                     </li>
                                 </ul>
-                            </td>
-                        </tr>
+                            </TableRowColumn>
+                        </TableRow>
                     )
                 })}
-              </tbody>
-            </table>
+                </TableBody>
+            </Table>
         );
     },
 

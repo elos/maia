@@ -28,6 +28,10 @@ describe('record_derived', function () {
             expect(record_derived.getAll(state, 'task').size).toBe(0);
         });
 
+        it('handles null state', function () {
+            expect(record_derived.getAll(null, 'task').size).toBe(0);
+        });
+
         it('handles unknown kinds appropriately', function () {
             var state = new RecordState();
             try {
@@ -60,6 +64,10 @@ describe('record_derived', function () {
             expect(record_derived.getOne(state, 'task', "2")).toBe(undefined);
         });
 
+        it('handles null state', function () {
+            expect(record_derived.getOne(null, 'task', "2")).toBe(undefined);
+        });
+
         it('handles undefined kind appropriately', function () {
             try {
                 record_derived.getOne(new RecordState(), 'peaches', undefined);
@@ -74,7 +82,7 @@ describe('record_derived', function () {
                 record_derived.getOne(new RecordState(), 'task', undefined);
                 expect(true).toBe(false);
             } catch (e) {
-                expect(e.toLowerCase()).toContain("undefined");
+                expect(e).toContain("Undefined record id");
             }
         });
     });

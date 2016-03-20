@@ -79,6 +79,8 @@ var RecordStore = assign({}, EventEmitter.prototype, {
     },
 
     getAll: function(kind) {
+        return record_derived.getAll(this.state, kind);
+        /*
         var records = [];
         var bucket = RecordStore.records[kind];
             var id;
@@ -94,9 +96,13 @@ var RecordStore = assign({}, EventEmitter.prototype, {
         }
 
         return records;
+        */
     },
 
     get: function (kind, id) {
+        return record_derived.getOne(this.state, kind, id);
+
+        /*
         var bucket =  this.records[kind];
         if (!bucket) {
             return null;
@@ -104,6 +110,7 @@ var RecordStore = assign({}, EventEmitter.prototype, {
 
         // cause this will be undefined I think, which isn't null
         return bucket[id] || null;
+        */
     },
 
       // merge two into one

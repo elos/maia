@@ -3,6 +3,7 @@
  */
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
+var Immutable = require("immutable");
 
 /*
  * Require our own modules
@@ -46,25 +47,21 @@ var TagStore = assign({}, EventEmitter.prototype, {
 
     // --- }}}
 
-    _tags: null,
+    _tags: Immutable.Set(),
 
     getAllTags: function () {
         return TagStore._tags;
     },
 
     nameForID: function (id) {
-        if (TagStore._tags === null) {
-            return "";
-        }
-
-        for (var i = 0; i < TagStore._tags.length; i++) {
-            var tag = TagStore._tags[i];
-            if (tag.id == id) {
-                return tag.name;
+        return TagStore._tags.reduce(function (cur, tag) {
+            switch (tag.id === id) {
+                case true:
+                    return tag.name;
+                case false:
+                    return cur;
             }
-        }
-
-        return "";
+        }, "");
     },
 
     _initialize: function () {

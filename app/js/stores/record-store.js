@@ -36,19 +36,7 @@ var RecordStoreEvents = {
  *  - Watches all record events and persists them to server.
  */
 var RecordStore = assign({}, EventEmitter.prototype, {
-    records: {},
     state: null,
-    _table: function (kind) {
-        if (this.records[kind] === undefined) {
-            this.records[kind] = {};
-        }
-
-        return this.records[kind];
-    },
-
-    initialize: function() {
-        //this.state = record_reducer(this.state, AppConstants.APP_INITIALIZE);
-    },
 
     emitChange: function (changeType) {
         this.emit(changeType);
@@ -80,76 +68,17 @@ var RecordStore = assign({}, EventEmitter.prototype, {
 
     getAll: function(kind) {
         return record_derived.getAll(this.state, kind);
-        /*
-        var records = [];
-        var bucket = RecordStore.records[kind];
-            var id;
-
-        if (bucket === undefined) {
-            return records;
-        }
-
-        for (id in bucket) {
-           if (bucket.hasOwnProperty(id)) {
-               records.push(bucket[id]);
-           }
-        }
-
-        return records;
-        */
     },
 
     get: function (kind, id) {
         return record_derived.getOne(this.state, kind, id);
-
-        /*
-        var bucket =  this.records[kind];
-        if (!bucket) {
-            return null;
-        }
-
-        // cause this will be undefined I think, which isn't null
-        return bucket[id] || null;
-        */
-    },
-
-      // merge two into one
-    _merge: function(one, two) {
-        var merge = {},
-            key;
-        for (key in one) {
-           if (one.hasOwnProperty(key)) {
-               merge[key] = one[key];
-           }
-        }
-
-        for (key in two) {
-           if (two.hasOwnProperty(key)) {
-               merge[key] = two[key];
-           }
-        }
-
-        return merge;
-    },
-
-    _pushRecord: function (kind, record) {
-        RecordStore._table(kind)[record.id] = RecordStore._merge(RecordStore._table(kind)[record.id] || {}, record);
-        this.emit(RecordStoreEvents.Push);
-        this.emit(RecordStoreEvents.Change);
-        this.emitKindChange(kind);
-    },
-
-    _pullRecord: function (kind, id) {
-        delete RecordStore._table(kind)[id];
-        this.emit(RecordStoreEvents.Pull);
-        this.emit(RecordStoreEvents.Change);
-        this.emitKindChange(kind);
     },
 
     dispatch: function (action) {
         this.state = record_reducer(this.state, action);
+        this.emitKindChange(action.data.kind);
+        this.emit(RecordStoreEvents.Change);
     },
-
 });
 
 /*
@@ -157,15 +86,10 @@ var RecordStore = assign({}, EventEmitter.prototype, {
  */
 RecordStore.dispatchToken = AppDispatcher.register(function (action) {
     switch (action.actionType) {
-        case AppConstants.APP_INITIALIZED:
-            RecordStore.initialize();
-            break;
         case AppConstants.RECORD_UPDATE:
-            RecordStore._pushRecord(action.data.kind, action.data.record);
             RecordStore.dispatch(record_actions.update(action.data.kind, action.data.record));
             break;
         case AppConstants.RECORD_DELETE:
-            RecordStore._pullRecord(action.data.kind, action.data.record.id);
             RecordStore.dispatch(record_actions.delete(action.data.kind, action.data.record));
             break;
     }

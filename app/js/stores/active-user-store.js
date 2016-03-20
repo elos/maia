@@ -44,17 +44,18 @@ var ActiveUserStore = assign({}, EventEmitter.prototype, {
     getID: function () {
         var users = RecordStore.getAll('user');
 
-        if (users.length === 0) {
-            return "";
+        switch (users.count()) {
+            case 0:
+                return "";
+            default:
+                switch (users[0]) {
+                    case null:
+                    case undefined:
+                        return "";
+                    default:
+                        return users[0].id;
+                }
         }
-
-        var u = users[0];
-
-        if (u === null) {
-            return "";
-        }
-
-        return u.id;
     },
     // --- }}}
 

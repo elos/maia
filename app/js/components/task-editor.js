@@ -19,7 +19,6 @@ var CardTitle = require('material-ui/lib/card/card-title');
 var FlatButton = require('material-ui/lib/flat-button');
 var CardActions = require('material-ui/lib/card/card-actions');
 
-
 /*
  * Require any local code we need, like stores, utils etc.
  */

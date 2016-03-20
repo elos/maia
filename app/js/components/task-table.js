@@ -88,9 +88,9 @@ var TaskTable = React.createClass({
                 </tr>
               </thead>
               <tbody>
-                {tasks.map(function(todo, i) {
+                {tasks.map(function(todo) {
                     return (
-                        <tr key={i} className={(todo.in_progress) ? "todo-in-progress":""}>
+                        <tr key={todo.id} className={(todo.in_progress) ? "todo-in-progress":""}>
                           <td>
                             {function () {
                                 if (!todo.in_progress) {

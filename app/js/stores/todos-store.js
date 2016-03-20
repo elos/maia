@@ -56,8 +56,10 @@ var TodosStore = assign({}, EventEmitter.prototype, {
     _recordChange: function () {
         TodosStore._todos = RecordStore
                                .getAll("task")
+                               .filter(TodosStore.isCompleted)
                                .map(TodosStore._processTodo)
                                .sort(TodosStore.byImportance);
+        console.log(TodosStore._todos);
         TodosStore.emitChange();
     },
 

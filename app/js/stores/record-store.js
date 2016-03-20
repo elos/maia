@@ -14,6 +14,7 @@ var Logger = require("../utils/logger");
 var Base64 = require("../utils/base64");
 var record_reducer = require('./record/record_reducer');
 var record_actions = require('./record/record_actions');
+var record_derived = require('./record/record_derived');
 
 
 /*

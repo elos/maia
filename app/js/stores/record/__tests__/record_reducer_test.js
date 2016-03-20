@@ -2,6 +2,9 @@ jest.dontMock('immutable');
 jest.dontMock('../../../constants/app-constants');
 jest.dontMock('../record_actions');
 jest.dontMock('../record_reducer');
+jest.dontMock('../record_state');
+jest.dontMock('../record_derived');
+jest.dontMock('../record_errors');
 jest.dontMock('../../../core/models/task');
 
 describe('record_reducer', function () {

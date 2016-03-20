@@ -5,33 +5,22 @@ var Immutable = require("immutable");
 
 // --- Internal ---
 var AppConstants = require("../../constants/app-constants");
+var RecordState = require("./record_state.js");
+var RecordErrors = require("./record_errors.js");
 
 // --- }}}
 
-// This is the valid state
-// recall we are using Immutable records to improve
-// our typing and apply constraints. So don't be pissed
-// when a record doesn't automatically work because you haven't
-// added it's kind here.
-var RecordState = Immutable.Record({
-    event: Immutable.Map(),
-    location: Immutable.Map(),
-    profile: Immutable.Map(),
-    tag: Immutable.Map(),
-    task: Immutable.Map(),
-    user: Immutable.Map(),
-});
 
 function reduceUpdate(state, data) {
     var kind = data.kind;
     var record = data.record;
 
     if (state.get(kind) === undefined) {
-        throw "Unknown record kind: '" + kind + "'";
+        throw RecordErrors.UnknownKind(kind);
     }
 
     if (record.id === undefined) {
-        throw "Undefined record id";
+        throw RecordErrors.UndefinedID();
     }
 
     return state.set(
@@ -45,11 +34,11 @@ function reduceDelete(state, data) {
     var record = data.record;
 
     if (state.get(kind) === undefined) {
-        throw "Unknown record kind: '" + kind + "'";
+        throw RecordErrors.UnknownKind(kind);
     }
 
     if (record.id === undefined) {
-        throw "Undefined record id";
+        throw RecordErrors.UndefinedID();
     }
 
     return state.set(

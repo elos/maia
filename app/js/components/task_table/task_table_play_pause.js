@@ -29,7 +29,7 @@ var TaskTablePlayPause = React.createClass({
             console.log("ASDFASDF"); props.pause();
           }}
           onClick={function() {
-            console.log("HELLOW"); props.pause()
+            console.log("HELLOW"); props.pause();
           }}>
                         <PauseCircle />
                     </IconButton>
@@ -38,11 +38,11 @@ var TaskTablePlayPause = React.createClass({
       default:
         return (
           <IconButton onTouchTap={props.play}>
-                        <PlayCircle />
-                   </IconButton>
-        )
+            <PlayCircle />
+          </IconButton>
+          );
     }
-  }
+  },
 });
 
 module.exports = TaskTablePlayPause;

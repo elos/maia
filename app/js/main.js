@@ -25,27 +25,29 @@ var RecordActions = require("./actions/record-actions");
 require("./stores/geolocation-store");
 
 Dispatcher.dispatch({
-    actionType: Constants.APP_INITIALIZED
+  actionType: Constants.APP_INITIALIZED
 });
 
 DB.changes({
-    error: function () {console.log("yikes");},
-    resolve: function (recordChange) {
-        switch (recordChange.change_kind) {
-            case DB.ChangeKind.Update:
-                RecordActions.update(recordChange.record_kind, recordChange.record);
-                break;
-            case DB.ChangeKind.Delete:
-                RecordActions.delete(recordChange.record_kind, recordChange.record);
-                break;
-        }
-    },
+  error: function() {
+    console.log("yikes");
+  },
+  resolve: function(recordChange) {
+    switch (recordChange.change_kind) {
+      case DB.ChangeKind.Update:
+        RecordActions.update(recordChange.record_kind, recordChange.record);
+        break;
+      case DB.ChangeKind.Delete:
+        RecordActions.delete(recordChange.record_kind, recordChange.record);
+        break;
+    }
+  },
 });
 
 /*
  * Initialize React Below
  */
 ReactDOM.render(
-    <Root />,
-    document.getElementById("react-app")
+  <Root />,
+  document.getElementById("react-app")
 )

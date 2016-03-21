@@ -1,12 +1,11 @@
 {
   "name": "maia",
   "version": "0.3.0",
-  "description": "A ReactJS and Flux demonstration.",
+  "description": "elos web app. js is a mess",
   "main": "Gulpfile.js",
   "repository": "https://github.com/elos/maia",
   "scripts": {
-    "test": "jest",
-    "lint": "eslint ./app/js"
+    "test": "jest"
   },
   "author": "Corey Prophitt",
   "license": "MIT",
@@ -56,7 +55,9 @@
       "./node_modules/react-dom",
       "./node_modules/react-addons-test-utils",
       "./node_modules/fbjs",
-      "./node_modules/recompose"
+      "./node_modules/recompose",
+      "./node_modules/redux",
+      "./node_modules/immutable"
     ],
     "bail": true
   }

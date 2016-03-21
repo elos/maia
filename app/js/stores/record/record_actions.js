@@ -15,6 +15,9 @@ var RecordActionData = Immutable.Record({
     record: Immutable.Map(),
 });
 
+var RecordBatchActionData = Immutable.Record({
+});
+
 // RecordUpdateActions represents an update has occured to a record
 // and that it should be updated
 var RecordUpdateAction = Immutable.Record({
@@ -27,6 +30,11 @@ var RecordUpdateAction = Immutable.Record({
 var RecordDeleteAction = Immutable.Record({
     type: AppConstants.RECORD_DELETE,
     data: new RecordActionData(),
+});
+
+var RecordBatchUpdateAction = Immutable.Record({
+    type: AppConstants.RECORD_BATCH_UPDATE,
+    data: new RecordBatchActionData(),
 });
 
 // var RecordActions = require("../path/.../record_actions);
@@ -51,7 +59,10 @@ module.exports = {
             }),
         });
     },
+
+    batch_update: function(kindMap /*map[string]objects*/) {
+        return new RecordBatchUpdateAction({
+            data: kindMap,
+        });
+    },
 };
-
-
-

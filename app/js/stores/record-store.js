@@ -75,8 +75,17 @@ var RecordStore = assign({}, EventEmitter.prototype, {
     },
 
     dispatch: function (action) {
+        var Self = this;
         this.state = record_reducer(this.state, action);
-        this.emitKindChange(action.data.kind);
+        switch (action.type) {
+            case AppConstants.RECORD_BATCH_UPDATE:
+                action.data.keySeq().forEach(function (key) {
+                    Self.emitKindChange(key);
+                });
+                break;
+            default:
+                Self.emitKindChange(action.data.kind);
+        }
         this.emit(RecordStoreEvents.Change);
     },
 });
@@ -91,6 +100,13 @@ RecordStore.dispatchToken = AppDispatcher.register(function (action) {
             break;
         case AppConstants.RECORD_DELETE:
             RecordStore.dispatch(record_actions.delete(action.data.kind, action.data.record));
+            break;
+    }
+
+
+    switch (action.type) {
+        case AppConstants.RECORD_BATCH_UPDATE:
+            RecordStore.dispatch(action);
             break;
     }
 });

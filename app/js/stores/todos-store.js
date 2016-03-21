@@ -51,9 +51,11 @@ var TodosStore = assign({}, EventEmitter.prototype, {
     _initialize: function () {
         RecordStore.addKindChangeListener(this._recordChange, "task");
         RouteStore.addChangeListener(this._routeChange);
+        this._recordChange();
     },
 
     _recordChange: function () {
+        console.log("recordChange");
         TodosStore._todos = RecordStore
                                .getAll("task")
                                .filter(TodosStore.isCompleted)

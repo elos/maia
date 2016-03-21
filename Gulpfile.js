@@ -26,18 +26,20 @@
  * 10. connect, used for local development server
  * 11. argv, used for reading commandline optional flags
  */
-var gulp = require("gulp"),
-    browserify = require("browserify"),
-    reactify = require("reactify"),
-    source = require("vinyl-source-stream"),
-    gulpif = require("gulp-if"),
-    streamify = require("gulp-streamify"),
-    uglify = require("gulp-uglify"),
-    minifyCSS = require("gulp-minify-css"),
-    concat = require("gulp-concat"),
-    connect = require("gulp-connect"),
-    argv = require("yargs").argv,
-    livereload = require('gulp-livereload');
+var gulp = require("gulp");
+var browserify = require("browserify");
+var reactify = require("reactify");
+var babelify = require("babelify");
+var source = require("vinyl-source-stream");
+var gulpif = require("gulp-if");
+var streamify = require("gulp-streamify");
+var uglify = require("gulp-uglify");
+var minifyCSS = require("gulp-minify-css");
+var concat = require("gulp-concat");
+var connect = require("gulp-connect");
+var argv = require("yargs").argv;
+var livereload = require('gulp-livereload');
+var eslint = require("gulp-eslint");
 
 /*
  * Main workflow tasks
@@ -46,48 +48,51 @@ var gulp = require("gulp"),
  *      1. --production, for a minified build
  *      2. --livereload to push live updates to your browser
  */
-gulp.task("default", [ "run-server" ]);
+gulp.task("default", ["run-server"]);
 
 /*
  * Secondary workflow tasks
  *   These are used as building blocks for the primary workflow tasks.
  */
-gulp.task("watch-files", [ "copy-html" ], function () {
-    gulp.watch("app/js/**/*.js", [ "recompile-js" ]);
-    gulp.watch("app/css/**/*.css", [ "recompile-css" ]);
-    gulp.watch("app/index.html", [ "recopy-html" ]);
-    gulp.watch("app/assets/**/*", [ "recopy-assets" ]);
+gulp.task("watch-files", ["copy-html"], function() {
+  gulp.watch("app/js/**/*.js", ["recompile-js"]);
+  gulp.watch("app/css/**/*.css", ["recompile-css"]);
+  gulp.watch("app/index.html", ["recopy-html"]);
+  gulp.watch("app/assets/**/*", ["recopy-assets"]);
 });
 
-gulp.task("run-server", [ "watch-files" ], function () {
-    if (argv.livereload) {
-        livereload.listen();
-    }
+gulp.task("run-server", ["watch-files"], function() {
+  if (argv.livereload) {
+    livereload.listen();
+  }
 
-    return connect.server({ root: "build/", port: 8000 });
+  return connect.server({
+    root: "build/",
+    port: 8000
+  });
 });
 
-gulp.task("compile-css", [ "compile-js" ], compileCSS);
+gulp.task("compile-css", ["compile-js"], compileCSS);
 gulp.task("recompile-css", compileCSS);
 
-gulp.task("copy-html", [ "copy-assets" ], copyHTML);
+gulp.task("copy-html", ["copy-assets"], copyHTML);
 gulp.task("recopy-html", copyHTML);
 
-gulp.task("copy-assets", [ "compile-css" ], copyAssets);
+gulp.task("copy-assets", ["compile-css"], copyAssets);
 gulp.task("recopy-assets", copyAssets);
 
-gulp.task("compile-js", [ "compile-external-js" ], compileJS);
+gulp.task("compile-js", ["compile-external-js"], compileJS);
 gulp.task("recompile-js", compileJS);
 
-gulp.task("compile-external-js", function () {
-	return browserify({
-		debug: true
-	})
-	.require("react")
-	.require("react-dom")
-	.require("flux")
-	.require("object-assign")
-	.require("events")
+gulp.task("compile-external-js", function() {
+  return browserify({
+    debug: true
+  })
+    .require("react")
+    .require("react-dom")
+    .require("flux")
+    .require("object-assign")
+    .require("events")
     .require("react-tap-event-plugin")
     .require("material-ui")
     .require("immutable")
@@ -103,36 +108,40 @@ gulp.task("compile-external-js", function () {
  *   These help DRY up some of the (re)compilation logic.
  */
 function compileCSS() {
-    return gulp.src("app/css/**/*.css")
-               .pipe(concat("bundled.css"))
-               .pipe(gulpif(argv.production, streamify(minifyCSS())))
-               .pipe(gulp.dest("build/css/"))
-               .pipe(gulpif(argv.livereload, livereload()));
+  return gulp.src("app/css/**/*.css")
+    .pipe(concat("bundled.css"))
+    .pipe(gulpif(argv.production, streamify(minifyCSS())))
+    .pipe(gulp.dest("build/css/"))
+    .pipe(gulpif(argv.livereload, livereload()));
 }
 
 function copyHTML() {
-    return gulp.src("app/index.html")
-               .pipe(gulp.dest("build/"))
-               .pipe(gulpif(argv.livereload, livereload()));
+  return gulp.src("app/index.html")
+    .pipe(gulp.dest("build/"))
+    .pipe(gulpif(argv.livereload, livereload()));
 }
 
 function copyAssets() {
-    return gulp.src("app/assets/**/*")
-               .pipe(gulp.dest("build/assets/"))
-               .pipe(gulpif(argv.livereload, livereload()));
+  return gulp.src("app/assets/**/*")
+    .pipe(gulp.dest("build/assets/"))
+    .pipe(gulpif(argv.livereload, livereload()));
 }
 
 function compileJS() {
-	return browserify({
-		debug: true,
-	})
-	.require(require.resolve("./app/js/main.js"), { entry: true })
-	.transform(reactify)
-	.external("react")
-	.external("react-dom")
-	.external("flux")
-	.external("object-assign")
-	.external("events")
+  return browserify({
+    debug: true,
+  })
+    .require(require.resolve("./app/js/main.js"), {
+      entry: true
+    })
+    .transform(babelify, {
+      presets: ["es2015", "react"]
+    })
+    .external("react")
+    .external("react-dom")
+    .external("flux")
+    .external("object-assign")
+    .external("events")
     .external("react-tap-event-plugin")
     .external("material-ui")
     .external("immutable")

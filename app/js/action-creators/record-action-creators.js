@@ -1,7 +1,10 @@
 // Require our own modules
+var AppDispatcher = require("../dispatcher/app-dispatcher");
+var Immutable = require("immutable");
 var Logger = require("../utils/Logger");
 var DB = require("../core/db");
 var RecordActions = require ("../actions/record-actions");
+var record_actions = require("../stores/record/record_actions");
 
 var RecordActionCreators = {
 
@@ -69,9 +72,10 @@ var RecordActionCreators = {
 
         DB.query(kind, attrs, {
             resolve: function (records) {
-                records.forEach(function (record) {
-                    RecordActions.update(kind, record);
-                });
+                AppDispatcher.dispatch(
+                    record_actions.batch_update(Immutable.Map().set(kind, Immutable.List(records))
+                    )
+                );
 
                 handlers.success(records);
             },

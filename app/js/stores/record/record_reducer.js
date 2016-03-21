@@ -47,6 +47,16 @@ function reduceDelete(state, data) {
     );
 }
 
+function reduceBatchUpdate(state, data) {
+    data.keySeq().forEach(function (key) {
+        data.get(key).forEach(function (record) {
+            state = reduceUpdate(state, {kind: key, record: record});
+        });
+    });
+
+    return state;
+}
+
 // this is it
 function records(state, action) {
     if (state === null || state === undefined) {
@@ -58,6 +68,8 @@ function records(state, action) {
             return reduceUpdate(state, action.data);
         case AppConstants.RECORD_DELETE:
             return reduceDelete(state, action.data);
+        case AppConstants.RECORD_BATCH_UPDATE:
+            return reduceBatchUpdate(state, action.data);
         default:
             return state;
     }

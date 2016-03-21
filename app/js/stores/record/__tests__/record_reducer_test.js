@@ -8,6 +8,7 @@ jest.dontMock('../record_errors');
 jest.dontMock('../../../core/models/task');
 
 describe('record_reducer', function () {
+    var Immutable = require("immutable");
     var AppConstants = require('../../../constants/app-constants');
     var Task = require('../../../core/models/task');
     var record_actions = require('../record_actions');
@@ -83,6 +84,30 @@ describe('record_reducer', function () {
             } catch (e) {
                 expect(e).toContain('peaches');
             }
+        });
+    });
+
+    describe("RECORD_BATCH_UPDATE", function () {
+        it('should update multiple records at once', function () {
+            var r1 = (new Task()).set('id', '1').set('name', 'one');
+            var r2 = (new Task()).set('id', '2').set('name', 'two');
+
+            var state = record_reducer(record_reducer(null, record_actions.update(r1.kind, r1)), record_actions.update(r2.kind, r2));
+
+            expect(state.get('task').count()).toBe(2);
+            expect(state.get('task').get('1').get('name')).toBe('one');
+            expect(state.get('task').get('2').get('name')).toBe('two');
+
+            var updated1 = r1.set('name', 'new name for one');
+            var updated2 = r2.set('name', 'new name for two');
+
+            state = record_reducer(state, record_actions.batch_update(Immutable.Map({
+                task: Immutable.List([updated1, updated2])
+            })));
+
+            expect(state.get('task').count()).toBe(2);
+            expect(state.get('task').get('1').get('name')).toBe('new name for one');
+            expect(state.get('task').get('2').get('name')).toBe('new name for two');
         });
     });
 });

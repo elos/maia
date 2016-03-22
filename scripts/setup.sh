@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# This setup.sh file establishes a reasonable javascript development
+# environment. It is composed of:
+# Assumptions:
+#   - you have homebrew (for installing Node)
+#   - you have python (for running SimpleHTTPServer)
+#
+#   1) Installing Node (Using Homebrew)
+#   2) Installing (updating) npm using npm
+#   3) Installing browserify
+#   4) Installing package deps
 set -e
 
 

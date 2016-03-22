@@ -58,7 +58,8 @@
       "./node_modules/fbjs",
       "./node_modules/recompose",
       "./node_modules/redux",
-      "./node_modules/immutable"
+      "./node_modules/immutable",
+      "./node_modules/material-ui"
     ],
     "bail": true
   }

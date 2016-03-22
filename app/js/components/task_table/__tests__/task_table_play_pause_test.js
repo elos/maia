@@ -5,16 +5,10 @@ describe('TaskTablePlayPause', function() {
   var ReactDOM = require("react-dom");
   var TestUtils = require("react-addons-test-utils");
   var TaskTablePlayPause = require("../task_table_play_pause");
-  console.log(TaskTablePlayPause);
 
   it('renders correctly', function() {
-    var play = jest.fn(function() {
-      console.log("fda");
-    });
-    var pause = jest.fn(function() {
-      console.log("asdf");
-    });
-
+    const play = jest.fn(function() {});
+    const pause = jest.fn(function() {});
     const playPause = TestUtils.renderIntoDocument(
       <TaskTablePlayPause on={true} play={play} pause={pause} />
     );

@@ -1,14 +1,16 @@
 # ELOS MAKEFILE
 # COMMANDS:
-
-vendors = ./node_modules/react ./node_modules/react-dom ./node_modules/flux ./node_modules/object-assign ./node_modules/events ./node_modules/react-tap-event-plugin ./node_modules/material-ui ./node_modules/immutable ./node_modules/react-addons-transition-group
+#
+MAIA_BUILD_DIR?=./build
+externals = -x ./node_modules/react -x ./node_modules/react-dom -x ./node_modules/flux -x ./node_modules/object-assign -x ./node_modules/events -x ./node_modules/react-tap-event-plugin -x ./node_modules/material-ui -x ./node_modules/immutable -x ./node_modules/react-addons-transition-group
+requires  = -r ./node_modules/react -r ./node_modules/react-dom -r ./node_modules/flux -r ./node_modules/object-assign -r ./node_modules/events -r ./node_modules/react-tap-event-plugin -r ./node_modules/material-ui -r ./node_modules/immutable -r ./node_modules/react-addons-transition-group
 
 build:
 	make build-main && make build-vendor
 build-main:
-	browserify --debug --entry ./app/js/main.js --external $(vendors) --outfile bundle.js --transform [ babelify --presets [ es2015 react ] ]
+	browserify --debug --entry ./app/js/main.js $(externals) --transform [ babelify --presets [ es2015 react ] ] --outfile $(MAIA_BUILD_DIR)/js/bundle.js
 build-vendor:
-	browserify --debug --require $(vendors) --outfile vendors.js
+	browserify --debug $(requires) --outfile $(MAIA_BUILD_DIR)/js/vendors.js
 run:
 	make build && python -m SimpleHTTPServer
 test:

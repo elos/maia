@@ -99,7 +99,7 @@ gulp.task("compile-external-js", function() {
     .require("react-addons-transition-group") //https://github.com/callemall/material-ui/issues/2818 felipethome is such a homie
     .bundle()
     .pipe(source("vendors.js"))
-    .pipe(streamify(uglify()))
+    //.pipe(streamify(uglify()))
     .pipe(gulp.dest("build/js/"));
 });
 

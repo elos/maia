@@ -20,28 +20,25 @@ var TaskTablePlayPause = React.createClass({
 
   render: function() {
     var props = this.props;
+    return <IconButton onTouchTap={function() {
+        console.log("ASDFASDF"); props.pause();
+      }} onClick={function() {
+        console.log("HELLOW"); props.pause();
+      }}> <PauseCircle /> </IconButton>;
 
-    switch (props.on) {
-      case true:
-        return (
-          <IconButton
-          onTouchTap={function() {
-            console.log("ASDFASDF"); props.pause();
-          }}
-          onClick={function() {
-            console.log("HELLOW"); props.pause();
-          }}>
-                        <PauseCircle />
-                    </IconButton>
-          );
-      case false:
-      default:
-        return (
-          <IconButton onTouchTap={props.play}>
-            <PlayCircle />
-          </IconButton>
-          );
-    }
+  /*
+  switch (props.on) {
+    case true:
+      return <IconButton onTouchTap={function() {
+          console.log("ASDFASDF"); props.pause();
+        }} onClick={function() {
+          console.log("HELLOW"); props.pause();
+        }}> <PauseCircle /> </IconButton>;
+    case false:
+    default:
+      return <IconButton onTouchTap={props.play}> <PlayCircle /> </IconButton>;
+  }
+  */
   },
 });
 

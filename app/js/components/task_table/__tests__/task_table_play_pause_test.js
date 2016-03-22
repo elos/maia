@@ -5,6 +5,7 @@ describe('TaskTablePlayPause', function() {
   var ReactDOM = require("react-dom");
   var TestUtils = require("react-addons-test-utils");
   var TaskTablePlayPause = require("../task_table_play_pause");
+  console.log(TaskTablePlayPause);
 
   it('renders correctly', function() {
     var play = jest.fn(function() {

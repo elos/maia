@@ -20,17 +20,42 @@ echo "
     waded through the depths in order to deliver this hermetically sealed (as well
     as I know how) package in which you can write formatted, linted (haha why did
     we invent compilers again?), typed javascript code. And you can test it.
+
+    --------------------------------------------------------------------------------
 "
 
-echo "Installing node using Homebrew"
+echo "
+    Installing Node using Homebrew
+
+    I think this just won't install if you already have it, if it blows up
+    my bad.
+"
 brew install node
-echo "Installing npm using npm (really brilliant)"
+
+echo "
+    Installing npm using npm (really brilliant)
+"
 npm install npm -g
-echo "Installing browserify (our build tool)"
+
+echo "
+    Installing browserify (our \"build\" tool)
+
+    Ask me one time about how long it took me to
+    get my javascript to build.
+"
 npm install -g browserify
+
 echo "
     Now we are installing our local dependencies.
     Sorry about the wait. Literally a million
     deps.
 "
 npm install
+
+echo "
+    Phew! Alright, you know that \`make build\` builds, and \`make test\`
+    runs the tests. If you don't write tests the code doesn't work.
+
+    To get started right away, try: \`make run\`. Should fire up a python
+    server, navigate to build/index.html.
+"

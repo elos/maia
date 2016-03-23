@@ -1,7 +1,6 @@
 // Require our own modules
 var Logger = require("../utils/logger");
 var Base64 = require("../utils/base64");
-var ConfigStore = require("../stores/config-store");
 
 /*
  * Gaia is an interface for communicating with an instance of an Elos Gaia server.
@@ -41,6 +40,15 @@ var Gaia = {
     RecordChanges: "/record/changes/",
   },
 
+  // Authentication generates an authentication object to optionally
+  // pass to a Gaia method
+  Authentication: function(publicCredential, privateCredential) {
+    return {
+      username: publicCredential,
+      password: privateCredential
+    };
+  },
+
   // endpoint takes a gaia Route, such as one from Gaia.Routes.*,
   // and joins it with the current gaia endpoint to construct
   // a fully qualified url.
@@ -78,7 +86,7 @@ var Gaia = {
   // Appropriate gaia authorization is applied. The
   // important component for callers callback, with
   // signature: func(status int, responseText string)
-  post: function(url, params, data, callback) {
+  post: function(url, params, data, callback, auth) {
     Logger.debug("Gaia.post");
 
     var xhr = new XMLHttpRequest();
@@ -89,7 +97,10 @@ var Gaia = {
       true // async
     );
 
-    Gaia._addAuthentication(xhr);
+    if (auth !== undefined) {
+      Gaia._addAuthentication(xhr, auth);
+    }
+
     Gaia._onResponse(xhr, callback);
 
     xhr.send(JSON.stringify(data));
@@ -98,10 +109,10 @@ var Gaia = {
   // delete creates a new DELETE to the supplied `url`
   // with the supplied `params`.
   // Appropriate authroization is applied using the
-  // ConfigStore. The important component for callers
+  // auth if provided. The important component for callers
   // callback, with signature:
   //   func(status int, responseText string)
-  delete: function(url, params, callback) {
+  delete: function(url, params, callback, auth) {
     Logger.debug("Gaia.delete");
 
     var xhr = new XMLHttpRequest();
@@ -112,7 +123,10 @@ var Gaia = {
       true // async
     );
 
-    Gaia._addAuthentication(xhr);
+    if (auth !== undefined) {
+      Gaia._addAuthentication(xhr, auth);
+    }
+
     Gaia._onResponse(xhr, callback);
 
     xhr.send();
@@ -121,10 +135,10 @@ var Gaia = {
   // get creates a new GET to the supplied `url`
   // with the supplied `params`
   // Appropriate authorization is applied user the
-  // ConfigStore. The important component for callers
+  // auth if provided. The important component for callers
   // is the callback, with signature:
   //   func(status int, responseText string)
-  get: function(url, params, callback) {
+  get: function(url, params, callback, auth) {
     Logger.debug("RecordStore.get");
 
     var xhr = new XMLHttpRequest();
@@ -135,7 +149,10 @@ var Gaia = {
       true // async
     );
 
-    Gaia._addAuthentication(xhr);
+    if (auth !== undefined) {
+      Gaia._addAuthentication(xhr);
+    }
+
     Gaia._onResponse(xhr, callback);
 
     xhr.send();
@@ -145,15 +162,13 @@ var Gaia = {
 
   // --- Websockets (ws) {{{
 
-  ws: function(endpoint) {
+  ws: function(endpoint, auth) {
+    if (auth === undefined || auth === null) {
+      auth = {};
+    }
+
     return new WebSocket(
-      this._encode(
-        endpoint.replace("http", "ws"),
-        {
-          "public": ConfigStore.getPublicCredential(),
-          "private": ConfigStore.getPrivateCredential(),
-        }
-      )
+      this._encode(endpoint.replace("http", "ws"), auth)
     );
   },
 
@@ -177,14 +192,16 @@ var Gaia = {
   },
 
   // _addAuthentication includes basic authentication using
-  // the app's ConfigStore. This basic authentication is applied
+  // the auth. This basic authentication is applied
   // as a base64 encoded Authorization Header
-  _addAuthentication: function(xhr) {
+  _addAuthentication: function(xhr, auth) {
+    if (auth === undefined || auth === null) {
+      return;
+    }
+
     xhr.setRequestHeader(
       "Authorization",
-      "Basic " + Base64.encode(
-        ConfigStore.getPublicCredential() + ":" + ConfigStore.getPrivateCredential()
-      )
+      "Basic " + Base64.encode(auth.username + ":" + auth.password)
     );
   },
 

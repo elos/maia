@@ -11,6 +11,16 @@ var Gaia = require("./gaia");
  */
 var DB = {
 
+  // --- Authentication  (Authenticate, Authentication) {{{
+
+  Authentication: undefined,
+
+  Authenticate: function(publicCredential, privateCredential) {
+    this.Authentication = Gaia.Authentication(publicCredential, privateCredential);
+  },
+
+  // --- }}}
+
   // --- Error Handling (Errors definitions, _errorFor private helper) {{{
 
   // Error represents the possible error objects a DB handler
@@ -93,7 +103,7 @@ var DB = {
         }
 
         handler.resolve(JSON.parse(responseBody));
-      }
+      }, this.Authentication
     );
   },
 
@@ -120,7 +130,7 @@ var DB = {
 
         handler.error(DB._errorFor(status));
         return;
-      }
+      }, this.Authentication
     );
   },
 
@@ -144,7 +154,7 @@ var DB = {
         Logger.info("ERROR: " + status + " " + responseBody);
         handler.error(DB._errorFor(status));
         return;
-      }
+      }, this.Authentication
     );
   },
 
@@ -166,7 +176,7 @@ var DB = {
         }
 
         handler.resolve(JSON.parse(responseBody));
-      }
+      }, this.Authentication
     );
   },
 
@@ -183,7 +193,7 @@ var DB = {
   // the handler is the standard { error: func.., resolve: func...}
   // changes returns a niladic function that closes the websocket;
   changes: function(handler) {
-    var ws = Gaia.ws(Gaia.endpoint(Gaia.Routes.RecordChanges));
+    var ws = Gaia.ws(Gaia.endpoint(Gaia.Routes.RecordChanges), this.Authentication);
 
     ws.onerror = function(error) {
       Logger.info("ws on error: ", error);
@@ -207,7 +217,5 @@ var DB = {
   // --- }}}
 
 };
-
-var trash = "";
 
 module.exports = DB;

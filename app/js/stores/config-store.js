@@ -10,6 +10,7 @@ var assign = require("object-assign");
 var AppDispatcher = require("../dispatcher/app-dispatcher");
 var AppConstants = require("../constants/app-constants");
 var Cookies = require("../utils/cookies");
+var DB = require("../core/db");
 
 /*
  * "Private" variables and functions can go here
@@ -88,6 +89,7 @@ var ConfigStore = Object.assign({}, EventEmitter.prototype, {
   _setCredentials: function(pubCred, priCred) {
     this._setPublicCredential(pubCred);
     this._setPrivateCredential(priCred);
+    DB.Authenticate(pubCred, priCred);
     this.emitChange();
   },
 
@@ -119,5 +121,6 @@ ConfigStore.dispatchToken = AppDispatcher.register(function(action) {
   }
 });
 
+DB.Authenticate(ConfigStore.getPublicCredential(), ConfigStore.getPrivateCredential());
 
 module.exports = ConfigStore;

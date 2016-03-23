@@ -1,4 +1,4 @@
-var Immutable = require("immutable");
+import Immutable from "immutable";
 
 // This a definition of the state accepted, understood
 // and managed by the record_reducer the valid state
@@ -6,13 +6,14 @@ var Immutable = require("immutable");
 // our typing and apply constraints. So don't be pissed
 // when a record doesn't automatically work because you haven't
 // added it's kind here.
-var RecordState = Immutable.Record({
-    event: Immutable.Map(),
-    location: Immutable.Map(),
-    profile: Immutable.Map(),
-    tag: Immutable.Map(),
-    task: Immutable.Map(),
-    user: Immutable.Map(),
+const RecordState = Immutable.Record({
+  event: Immutable.Map(),
+  location: Immutable.Map(),
+  profile: Immutable.Map(),
+  tag: Immutable.Map(),
+  task: Immutable.Map(),
+  user: Immutable.Map(),
 });
 
+export default RecordState;
 module.exports = RecordState;

@@ -15,12 +15,6 @@ var record_reducer = require('./record/record_reducer');
 var record_actions = require('./record/record_actions');
 var record_derived = require('./record/record_derived');
 
-
-/*
- * Private variables and functions can go here
- */
-var _ticksRemaining = 10;
-
 var RecordStoreEvents = {
   Update: "update",
   Delete: "delete",
@@ -101,7 +95,6 @@ RecordStore.dispatchToken = AppDispatcher.register(function(action) {
       RecordStore.dispatch(record_actions.delete(action.data.kind, action.data.record));
       break;
   }
-
 
   switch (action.type) {
     case AppConstants.RECORD_BATCH_UPDATE:

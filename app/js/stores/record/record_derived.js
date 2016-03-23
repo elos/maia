@@ -1,55 +1,59 @@
-var Immutable = require("immutable");
-var RecordErrors = require("./record_errors.js");
+import Immutable from "immutable";
+import RecordErrors from "./record_errors.js";
 
-function getAll(state /*RecordState*/, kind /*string*/) {
-    switch (state) {
-        case null:
+function getAll(state /*RecordState*/ , kind /*string*/ ) {
+  switch (state) {
+    case null:
+    case undefined:
+      return Immutable.Set();
+    default:
+      switch (state.get(kind)) {
         case undefined:
-            return Immutable.Set();
+          throw RecordErrors.UnknownKind(kind);
         default:
-            switch (state.get(kind)) {
-                case undefined:
-                    throw RecordErrors.UnknownKind(kind);
-                default:
-                    return state.get(kind).toSet();
-            }
-    }
+          return state.get(kind).toSet();
+      }
+  }
 }
 
 // Maybe<Undefined, Record<Kind>
-function getOne(state /*RecordState*/, kind /*string*/, id /*string*/) {
-    switch (state) {
+function getOne(state /*RecordState*/ , kind /*string*/ , id /*string*/ ) {
+  switch (state) {
 
-        // Ill-defined state
+    // Ill-defined state
+    case null:
+    case undefined:
+      return undefined;
+
+    // Well-defined state
+    default:
+      switch (state.get(kind)) {
+        // Ill-defined kind
         case null:
         case undefined:
-            return undefined;
+          throw RecordErrors.UnknownKind(kind);
 
-        // Well-defined state
+        // Well-defined kind
         default:
-        switch (state.get(kind)) {
-            // Ill-defined kind
+          switch (id) {
+            // Ill-defined id
             case null:
             case undefined:
-                throw RecordErrors.UnknownKind(kind);
+              throw RecordErrors.UndefinedID();
 
-            // Well-defined kind
+            // Well-defined id
             default:
-                switch (id) {
-                    // Ill-defined id
-                    case null:
-                    case undefined:
-                        throw RecordErrors.UndefinedID();
-
-                    // Well-defined id
-                    default:
-                        return state.get(kind).get(id);
-                }
-        }
-    }
+              return state.get(kind).get(id);
+          }
+      }
+  }
 }
 
-module.exports = {
-    getAll: getAll,
-    getOne: getOne,
+const core = {
+  getAll: getAll,
+  getOne: getOne,
 };
+
+export { getAll, getOne };
+export default core;
+module.exports = core;

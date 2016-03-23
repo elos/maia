@@ -17,6 +17,7 @@ var DB = {
 
   Authenticate: function(publicCredential, privateCredential) {
     this.Authentication = Gaia.Authentication(publicCredential, privateCredential);
+    Logger.info("Authing: ", this.Authentication);
   },
 
   // --- }}}

@@ -8,8 +8,7 @@
 #
 #   1) Installing Node (Using Homebrew)
 #   2) Installing (updating) npm using npm
-#   3) Installing browserify
-#   4) Installing package deps
+#   3) Installing package deps
 set -e
 
 
@@ -29,7 +28,7 @@ echo "
     none of these. And to that I would respond yes, but forget that. For I have
     waded through the depths in order to deliver this hermetically sealed (as well
     as I know how) package in which you can write formatted, linted (haha why did
-    we invent compilers again?), typed javascript code. And you can test it.
+    we invent compilers again?), typed javascript code. And you can test it, too!
 
     --------------------------------------------------------------------------------
 "
@@ -55,9 +54,10 @@ echo "
 npm install
 
 echo "
+    --------------------------------------------------------------------------------
     Phew! Alright, you know that \`make build\` builds, and \`make test\`
     runs the tests. If you don't write tests the code doesn't work.
 
     To get started right away, try: \`make run\`. Should fire up a python
-    server, navigate to build/index.html.
+    server, navigate to the root of the server it starts (probably localhost:8000)
 "

@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# this starts up a fully integrated gaia server, that serves the app
+# I don't use this too much #betasoftware
+
 echo "
-    Starting a provisional Gaia server
+    Starting a provisional Gaia server [BETA]
 
     It is running on an in-memory DB
 

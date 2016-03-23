@@ -64,6 +64,9 @@ const constants = {
    * CLI Constants
    */
   CLI_INPUT: "CLI_INPUT",
+  CLI_OUTPUT: "CLI_OUTPUT",
+  CLI_WS_OPEN: "CLI_WS_OPEN",
+  CLI_WS_CLOSE: "CLI_WS_CLOSE",
 };
 
 export default constants;

@@ -55,9 +55,9 @@ const TaskTableRow = React.createClass({
     const startTask = tac.start.bind(tac, task.id);
     const stopTask = tac.stop.bind(tac, task.id);
     const complete = tac.complete.bind(tac, task.id);
-    const makeGoal = tac.goal.bind(tac, task.id);
+    const makeGoal = tac.goal.bind(tac, task);
     const dropGoal = tac.dropGoal.bind(tac, task)
-    const edit = tac.edit.bind(tac, task.id);
+    const edit = tac.edit.bind(tac, task);
     const del = tac.delete.bind(tac, task.id);
 
     const rowClassName = (props.task.in_progress) ? "todo-in-progress" : "";

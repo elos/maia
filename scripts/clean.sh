@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# clean.sh is intended to be run using `make clean`, but can
+# be run directly, so long as you are in the root of the maia
+# directory, as you'll note it uses relative paths
+
 set -e
 
 echo "
@@ -8,12 +12,10 @@ echo "
     1) Removing node_modules directory
     2) Removing build directory
 
-    -------------------------------------"
-
-echo "
+    -------------------------------------
         * Removing node_modules (rm -rf ./node_modules/*)"
 read -p "        --> Are you sure? " -n 1 -r
-echo    # (optional) move to a new line
+echo    # move output to next line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
     # do dangerous stuff
@@ -23,9 +25,9 @@ fi
 echo "
     -------------------------------------
     Cleaning Build
-        * Removing built css (rm -rf ./build/css/*.css)
-        * Removing built js (rm -rf ./build/js/*.js)
-        * Removing assets (rm -rf ./build/assets)
+        * Removing built css  (rm -rf ./build/css/*.css)
+        * Removing built js   (rm -rf ./build/js/*.js)
+        * Removing assets     (rm -rf ./build/assets)
         * Removing index.html (rm -f ./build/index.html)"
 read -p "        --> Are you sure? " -n 1 -r
 echo    # (optional) move to a new line
@@ -40,9 +42,9 @@ fi
 echo "
     -------------------------------------
     Cleaning Distribution
-        * Removing built css (rm -rf ./dist/css/*.css)
-        * Removing built js (rm -rf ./dist/js/*.js)
-        * Removing assets (rm -rf ./dist/assets)
+        * Removing built css  (rm -rf ./dist/css/*.css)
+        * Removing built js   (rm -rf ./dist/js/*.js)
+        * Removing assets     (rm -rf ./dist/assets)
         * Removing index.html (rm -f ./dist/index.html)"
 read -p "        --> Are you sure? " -n 1 -r
 echo    # (optional) move to a new line

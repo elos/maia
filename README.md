@@ -9,6 +9,7 @@ Maia is the elos web app.
 ```
 
 #### Directory Structure
+```
 .
 ├── Makefile       <- See: make setup, make build, make test, make run, and make gaia
 ├── README.md      <- This file
@@ -19,6 +20,7 @@ Maia is the elos web app.
 ├── package.json   <- The npm package.json file which declares dependencies and other trivialities
 ├── scripts        <- The majority of scripts live here, most should be invoked using make
 └── tmp            <- Temp files, primarily for running the gaia integration (see make gaia)
+```
 
 #### Decisions
 

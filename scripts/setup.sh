@@ -48,14 +48,6 @@ echo "
 npm install npm -g
 
 echo "
-    Installing browserify (our \"build\" tool)
-
-    Ask me one time about how long it took me to
-    get my javascript to build.
-"
-npm install -g browserify
-
-echo "
     Now we are installing our local dependencies.
     Sorry about the wait. Literally a million
     deps.

@@ -30,4 +30,5 @@ var TaskTablePlayPause = React.createClass({
   },
 });
 
+export default TaskTablePlayPause;
 module.exports = TaskTablePlayPause;

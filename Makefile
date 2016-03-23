@@ -1,7 +1,6 @@
 # ELOS MAKEFILE
 # COMMANDS:
 
-
 # I think the way make work it will associate recipes (what I think the
 # (name:) things are with targets. but that's not how I've been using them
 # so I just declar them all "phony"
@@ -26,25 +25,41 @@ externals = -x ./node_modules/react -x ./node_modules/react-dom -x ./node_module
 mainBuild = --entry ./app/js/main.js $(externals) --transform [ babelify --presets [ es2015 react ] ] --outfile $(MAIA_BUILD_DIR)/js/main.js
 vendBuild = $(requires) --outfile $(MAIA_BUILD_DIR)/js/vendors.js
 
+browserifyExecutable = ./node_modules/browserify/bin/cmd.js
+cleancssExecutable = ./node_modules/clean-css/bin/cleancss
+
+build:
+	./scripts/build.sh
 
 # Build the js main and vendor files
 # Not a production build!!!!
-build:
-	echo "Building main.js & vendor.js NOT PRODUCTION"
+build-js:
 	make build-main && make build-vendor
 
 # Build the js main file
 # This is not a production build, not the debug
 build-main:
-	browserify $(mainBuild) --debug --verbose
+	$(browserifyExecutable) $(mainBuild) --debug --verbose
 
 # Build the vendor main file
 # This is not the production build
 build-vendor:
-	browserify $(vendBuild) --debug --verbose
+	$(browserifyExecutable) $(vendBuild) --debug --verbose
+
+build-css:
+	$(cleancssExecutable) ./app/css/main.css --output $(MAIA_BUILD_DIR)/css/bundled.css --source-map --debug
+
+copy-html:
+	cp app/index.html $(MAIA_BUILD_DIR)
+
+copy-assets:
+	cp -r app/assets $(MAIA_BUILD_DIR)
 
 run:
 	make build && cd build && python -m SimpleHTTPServer
+
+gaia:
+	./scripts/tgaia.sh
 
 test:
 	npm test
@@ -55,3 +70,5 @@ setup:
 	./scripts/setup.sh
 clean:
 	./scripts/clean.sh
+reset:
+	./scripts/reset.sh

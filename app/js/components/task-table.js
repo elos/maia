@@ -1,37 +1,19 @@
-/*
- * Require all third party libraries
- *
- * 1. `react` is required for `React.createClass`
- * 2/ `moment` is require for duration formatting
- */
-var React = require("react");
+// --- Imports {{{
 
-/*
- * Require any local code we need, like stores, utils etc.
- */
-// Utilities
+// --- External
+import React from "react";
+import Immutable from "immutable";
 
-var TodosActionCreators = require("../action-creators/todos-action-creators");
+// --- Internal
+import { Task, Tag } from "../core/models";
 var TodosStore = require("../stores/todos-store");
 var TagStore = require("../stores/tag-store");
 var TagActionCreators = require("../action-creators/tag-action-creators");
-
-import LinearProgress from 'material-ui/lib/linear-progress';
-import Paper from "material-ui/lib/paper";
-import Table from "material-ui/lib/table/table";
-import TableHeaderColumn from 'material-ui/lib/table/table-header-column';
-import TableRow from 'material-ui/lib/table/table-row';
-import TableHeader from 'material-ui/lib/table/table-header';
-import TableRowColumn from 'material-ui/lib/table/table-row-column';
-import TableBody from 'material-ui/lib/table/table-body';
-
-var TaskTableImplementation = require("./task_table/task_table_implementation");
-
+import TaskTableImplementation from "./task_table/task_table_implementation";
 var TodosActionCreators = require("../action-creators/todos-action-creators");
+// --- }}}
 
-import { Task } from "../core/models";
-
-var TaskTable = React.createClass({
+const TaskTable = React.createClass({
 
   // Called once when the component is mounted
   componentDidMount: function() {
@@ -64,8 +46,17 @@ var TaskTable = React.createClass({
    */
   render: function() {
     var in_progress = this.state.tasks === null || this.state.tasks.count() === 0;
-    var tasks = this.state.tasks.filter(TodosStore.isCompleted);
-    return <TaskTableImplementation isLoading={in_progress} tasks={tasks.toList().map((t) => new Task(t))} actionCreator={TodosActionCreators}/>;
+    var tasks = this.state.tasks.toList()
+      .filter(TodosStore.isCompleted)
+      .map((t) => new Task(t))
+      .map((task) => task.set(
+        "tags",
+        Immutable.List(task.tags_ids.map((tag_id) => new Tag({
+          "id": tag_id,
+          "name": TagStore.nameForID(tag_id)
+        })))));
+
+    return <TaskTableImplementation isLoading={in_progress} tasks={tasks} actionCreator={TodosActionCreators}/>;
   },
 
   /*
@@ -78,4 +69,5 @@ var TaskTable = React.createClass({
   }
 })
 
+export default TaskTable;
 module.exports = TaskTable;

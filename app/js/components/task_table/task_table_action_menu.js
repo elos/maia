@@ -15,10 +15,9 @@ const TaskTableActionMenu = React.createClass({
   },
 
   render: function() {
+    let goalAction = <MenuItem primaryText="Make Goal" onTouchTap={this.props.dropGoal} />;
     if (this.props.isGoal) {
-      const goalAction = <MenuItem primaryText="Drop Goal" onTouchTap={this.props.makeGoal} />;
-    } else {
-      const goalAction = <MenuItem primaryText="Make Goal" onTouchTap={this.props.dropGoal} />;
+      goalAction = <MenuItem primaryText="Drop Goal" onTouchTap={this.props.makeGoal} />;
     }
 
     return <IconMenu iconButtonElement={ <IconButton> <MoreVertIcon /> </IconButton> }
@@ -34,7 +33,7 @@ const TaskTableActionMenu = React.createClass({
                 <MenuItem primaryText="Complete"
       onTouchTap={this.props.complete}
       />
-                goalAction
+      {goalAction}
                 <MenuItem primaryText="Edit"
       onTouchTap={this.props.edit}
       />

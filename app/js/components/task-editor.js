@@ -4,20 +4,20 @@
  * 1. `react` is required for `React.createClass`
  * 2/ `moment` is require for duration formatting
  */
-var React = require("react");
-var moment = require("moment");
-var DatePicker = require('material-ui/lib/date-picker/date-picker');
-var TextField = require("material-ui/lib/text-field");
-var TimePicker = require('material-ui/lib/time-picker/time-picker');
-var LinearProgress = require('material-ui/lib/linear-progress');
-var List = require('material-ui/lib/lists/list');
-var ListItem = require('material-ui/lib/lists/list-item');
-var Checkbox = require('material-ui/lib/checkbox');
-var Paper = require('material-ui/lib/paper');
-var Card = require('material-ui/lib/card/card');
-var CardTitle = require('material-ui/lib/card/card-title');
-var FlatButton = require('material-ui/lib/flat-button');
-var CardActions = require('material-ui/lib/card/card-actions');
+import React from "react";
+import moment from "moment";
+import DatePicker from 'material-ui/lib/date-picker/date-picker';
+import TextField from "material-ui/lib/text-field";
+import TimePicker from 'material-ui/lib/time-picker/time-picker';
+import LinearProgress from 'material-ui/lib/linear-progress';
+import List from 'material-ui/lib/lists/list';
+import ListItem from 'material-ui/lib/lists/list-item';
+import Checkbox from 'material-ui/lib/checkbox';
+import Paper from 'material-ui/lib/paper';
+import Card from 'material-ui/lib/card/card';
+import CardTitle from 'material-ui/lib/card/card-title';
+import FlatButton from 'material-ui/lib/flat-button';
+import CardActions from 'material-ui/lib/card/card-actions';
 
 /*
  * Require any local code we need, like stores, utils etc.
@@ -40,425 +40,432 @@ var RouteStore = require("../stores/route-store");
  * "Private" variables and functions can go here
  */
 var Style = {
-    Container: {
-        background: "white",
-        width: "70%",
-        margin: "30px auto",
-    },
+  Container: {
+    background: "white",
+    width: "70%",
+    margin: "30px auto",
+  },
 
-    FormContainer: {
-        display: "flex",
-        flexDirection: "row",
+  FormContainer: {
+    display: "flex",
+    flexDirection: "row",
 
-        FormNavigation: {
-            List: {
-                paddingLeft: "0",
-                listStyleType: "none",
+    FormNavigation: {
+      List: {
+        paddingLeft: "0",
+        listStyleType: "none",
 
-                Item:  {
-                    cursor: "pointer",
-                    borderLeft: "2px solid grey",
-                    padding: "3px 10px",
-                },
-
-                ItemSelected: {
-                    color: "blue",
-                    borderLeft: "2px solid blue",
-                },
-            },
+        Item: {
+          cursor: "pointer",
+          borderLeft: "2px solid grey",
+          padding: "3px 10px",
         },
 
-        Form: {
-            display: "flex",
-            flexDirection: "column",
-            paddingLeft: 20,
+        ItemSelected: {
+          color: "blue",
+          borderLeft: "2px solid blue",
         },
+      },
     },
 
-    Input: {
-        flex: 1,
+    Form: {
+      display: "flex",
+      flexDirection: "column",
+      paddingLeft: 20,
     },
+  },
 
-    Button: {
-        float: "right",
-    }
+  Input: {
+    flex: 1,
+  },
+
+  Button: {
+    float: "right",
+  }
 };
 
 var TaskEditor = React.createClass({
 
-    /*
-     * Called once when the component is mounted
-     */
-    componentDidMount: function () {
-        MDL.refresh();
-        TodosStore.addChangeListener(this._todosChange);
-        TagStore.addChangeListener(this._tagChange);
-        TagActionCreators.issueRefresh();
-        RouteStore.addChangeListener(this._routeChange);
-    },
+  /*
+   * Called once when the component is mounted
+   */
+  componentDidMount: function() {
+    MDL.refresh();
+    TodosStore.addChangeListener(this._todosChange);
+    TagStore.addChangeListener(this._tagChange);
+    TagActionCreators.issueRefresh();
+    RouteStore.addChangeListener(this._routeChange);
+  },
 
-    /*
-     * Called once when the component is unmounted
-     */
-    componentWillUnmount: function () {
-        TodosStore.removeChangeListener(this._todosChange);
-        TagStore.removeChangeListener(this._tagChange);
-        RouteStore.removeChangeListener(this._routeChange);
-    },
+  /*
+   * Called once when the component is unmounted
+   */
+  componentWillUnmount: function() {
+    TodosStore.removeChangeListener(this._todosChange);
+    TagStore.removeChangeListener(this._tagChange);
+    RouteStore.removeChangeListener(this._routeChange);
+  },
 
-    _todosChange: function () {
-        var target = TodosStore.getEditorTarget();
+  _todosChange: function() {
+    var target = TodosStore.getEditorTarget();
 
-        var tasks = TodosStore.getTodos();
-        if (tasks !== null) {
-            tasks = tasks.filter(TodosStore.isCompleted);
+    var tasks = TodosStore.getTodos();
+    if (tasks !== null) {
+      tasks = tasks.filter(TodosStore.isCompleted);
+    }
+
+    if (target !== null && target.id) {
+      tasks = tasks.filter(function(task) {
+        return task.id !== target.id;
+      });
+    }
+
+    this.setState({
+      task: target,
+      tasks: tasks,
+    });
+  },
+
+  _tagChange: function() {
+    this.setState({
+      tags: TagStore.getAllTags(),
+    });
+  },
+
+  _routeChange: function() {
+    var id = RouteStore.getState("task_id");
+
+    if (!id) {
+      return;
+    }
+
+    console.log(id);
+
+    if (id && (!this.state.task || !this.state.task.id || this.state.task.id.length === 0)) {
+      RecordActionCreators.find('task', id, {
+        success: function(record) {
+          TodosActions.editTask(record);
         }
+      });
+    }
+  },
 
-        if (target !== null && target.id) {
-            tasks = tasks.filter(function (task) { return task.id !== target.id; });
+  /*
+   * Called when the compoenent's changes are flushed to the DOM
+   */
+  componentDidUpdate: function() {
+    MDL.refresh();
+  },
+
+  /*
+   * Called once before componentDidMount to set the initial component state.
+   */
+  getInitialState: function() {
+    var id = RouteStore.getState("task_id");
+
+    if (id) {
+      RecordActionCreators.find('task', id, {
+        success: function(record) {
+          Logger.info(record);
+          TodosActionCreators.edit(record);
         }
+      });
+    }
 
-        this.setState({
-            task: target,
-            tasks: tasks,
-        });
-    },
+    var target = TodosStore.getEditorTarget();
 
-    _tagChange: function () {
-        this.setState({
-            tags: TagStore.getAllTags(),
-        });
-    },
+    var tasks = TodosStore.getTodos();
+    if (tasks !== null) {
+      tasks = tasks.filter(TodosStore.isCompleted);
+    }
 
-    _routeChange: function () {
-        var id = RouteStore.getState("task_id");
+    if (target !== null && target.id) {
+      tasks = tasks.filter(function(task) {
+        return task.id !== target.id;
+      });
+    }
 
-        if (!id) {
-            return;
-        }
+    return {
+      task: target,
+      tags: TagStore.getAllTags(),
+      tasks: tasks,
+      navigation: "Basic",
+    };
+  },
 
-        console.log(id);
+  nameChange: function(event) {
+    var t = this.state.task;
+    t.name = event.target.value;
+    this.setState({
+      task: t
+    });
+  },
 
-        if (id && (!this.state.task || !this.state.task.id || this.state.task.id.length === 0)) {
-            RecordActionCreators.find('task', id, {
-                success: function (record) {
-                    TodosActions.editTask(record);
-                }
-            });
-        }
-    },
+  deadlineChange: function(event) {
+    var t = this.state.task;
+    t.deadline = new Date(event.target.value);
+    this.setState({
+      task: t
+    });
+  },
 
-    /*
-     * Called when the compoenent's changes are flushed to the DOM
-     */
-    componentDidUpdate: function() {
-        MDL.refresh();
-    },
+  submit: function() {
+    Logger.info(this.state);
+    TodosActionCreators.save(this.state.task);
+  },
 
-    /*
-     * Called once before componentDidMount to set the initial component state.
-     */
-    getInitialState: function () {
-        var id = RouteStore.getState("task_id");
+  includeTag: function(tag) {
+    var t = this.state.task;
+    t.tags_ids = t.tags_ids || [];
 
-        if (id) {
-            RecordActionCreators.find('task', id, {
-                success: function (record) {
-                    Logger.info(record);
-                    TodosActionCreators.edit(record);
-                }
-            });
-        }
+    if (t.tags_ids.indexOf(tag.id) === -1) {
+      t.tags_ids.push(tag.id);
+    } else {
+      return;
+    }
 
-        var target = TodosStore.getEditorTarget();
+    this.setState({
+      task: t,
+    });
+  },
 
-        var tasks = TodosStore.getTodos();
-        if (tasks !== null) {
-            tasks = tasks.filter(TodosStore.isCompleted);
-        }
+  excludeTag: function(tag) {
+    var t = this.state.task;
+    t.tags_ids = t.tags_ids || [];
+    t.tags_ids = t.tags_ids.filter(function(t_id) {
+      return t_id !== tag.id;
+    });
 
-        if (target !== null && target.id) {
-            tasks = tasks.filter(function (task) { return task.id !== target.id; });
-        }
+    this.setState({
+      task: t,
+    });
+  },
 
-        return {
-            task: target,
-            tags: TagStore.getAllTags(),
-            tasks: tasks,
-            navigation: "Basic",
-        };
-    },
+  includePrerequisite: function(task) {
+    var t = this.state.task;
+    t.prerequisites_ids = t.prerequisites_ids || [];
 
-    nameChange: function (event) {
-        var t = this.state.task;
-        t.name = event.target.value;
-        this.setState({task: t});
-    },
+    if (t.prerequisites_ids.indexOf(task.id) === -1) {
+      t.prerequisites_ids.push(task.id);
+    } else {
+      return;
+    }
 
-    deadlineChange: function (event) {
-        var t = this.state.task;
-        t.deadline = new Date(event.target.value);
-        this.setState({task: t});
-    },
+    this.setState({
+      task: t,
+    });
+  },
 
-    submit: function () {
-        Logger.info(this.state);
-        TodosActionCreators.save(this.state.task);
-    },
+  excludePrerequisite: function(task) {
+    var t = this.state.task;
+    t.prerequisites_ids = t.prerequisites_ids || [];
+    t.prerequisites_ids = t.prerequisites_ids.filter(function(t_id) {
+      return t_id !== task.id;
+    });
 
-    includeTag: function (tag) {
-        var t = this.state.task;
-        t.tags_ids = t.tags_ids || [];
+    this.setState({
+      task: t,
+    });
+  },
 
-        if (t.tags_ids.indexOf(tag.id) === -1) {
-            t.tags_ids.push(tag.id);
-        } else {
-            return;
-        }
+  newDeadlineDate: function(_, newDate) {
+    if (this.state.task.deadline) {
+      newDate.setHours(this.state.task.deadline.getHours());
+      newDate.setMinutes(this.state.task.deadline.getMinutes());
+    }
 
-        this.setState({
-            task: t,
-        });
-    },
+    var t = Object.assign({}, this.state.task);
+    t.deadline = newDate;
 
-    excludeTag: function (tag) {
-        var t = this.state.task;
-        t.tags_ids = t.tags_ids || [];
-        t.tags_ids = t.tags_ids.filter(function (t_id) {
-            return t_id !== tag.id;
-        });
+    this.setState({
+      task: t,
+    });
+  },
 
-        this.setState({
-            task: t,
-        });
-    },
+  newDeadlineTime: function(_, newTime) {
+    var t = Object.assign({}, this.state.task);
+    t.deadline.setHours(newTime.getHours());
+    t.deadline.setMinutes(newTime.getMinutes());
+    this.setState({
+      task: t,
+    });
+  },
+  // --- render {{{
 
-    includePrerequisite: function (task) {
-        var t = this.state.task;
-        t.prerequisites_ids = t.prerequisites_ids || [];
+  /*
+   * Called every time the state changes
+   */
+  render: function() {
+    var TaskEditor = this;
 
-        if (t.prerequisites_ids.indexOf(task.id) === -1) {
-            t.prerequisites_ids.push(task.id);
-        } else {
-            return;
-        }
-
-        this.setState({
-            task: t,
-        });
-    },
-
-    excludePrerequisite: function (task) {
-        var t = this.state.task;
-        t.prerequisites_ids = t.prerequisites_ids || [];
-        t.prerequisites_ids = t.prerequisites_ids.filter(function (t_id) {
-            return t_id !== task.id;
-        });
-
-        this.setState({
-            task: t,
-        });
-    },
-
-    newDeadlineDate: function(_, newDate) {
-        if (this.state.task.deadline) {
-            newDate.setHours(this.state.task.deadline.getHours());
-            newDate.setMinutes(this.state.task.deadline.getMinutes());
-        }
-
-        var t = Object.assign({}, this.state.task);
-        t.deadline = newDate;
-
-        this.setState({
-            task: t,
-        });
-    },
-
-    newDeadlineTime: function(_, newTime) {
-        var t = Object.assign({}, this.state.task);
-        t.deadline.setHours(newTime.getHours());
-        t.deadline.setMinutes(newTime.getMinutes());
-        this.setState({
-            task: t,
-        });
-    },
-        // --- render {{{
-
-    /*
-     * Called every time the state changes
-     */
-    render: function () {
-        var TaskEditor = this;
-
-        var Basic = (
-               <div style={Style.FormContainer.Form}>
+    var Basic = (
+    <div style={Style.FormContainer.Form}>
                    <TextField
-                       floatingLabelText="Name..."
-                       value={this.state.task.name}
-                       onChange={this.nameChange}
-                   />
+    floatingLabelText="Name..."
+    value={this.state.task.name}
+    onChange={this.nameChange}
+    />
                    <DatePicker
-                       minDate={new Date()}
-                       value={this.state.task.deadline}
-                       onChange={this.newDeadlineDate}
-                       hintText="Deadline Date"
-                    />
+    minDate={new Date()}
+    value={this.state.task.deadline}
+    onChange={this.newDeadlineDate}
+    hintText="Deadline Date"
+    />
                     <TimePicker
-                       value={this.state.task.deadline}
-                       onChange={this.newDeadlineTime}
-                       hintText="Deadline Time"
-                    />
+    value={this.state.task.deadline}
+    onChange={this.newDeadlineTime}
+    hintText="Deadline Time"
+    />
                 </div>
-            );
+    );
 
-        var Tags;
+    var Tags;
 
-        if (this.state.tags === null) {
-            Tags = (
-                <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
-            );
-        } else {
-            Tags = (
-               <div style={Style.FormContainer.Form}>
+    if (this.state.tags === null) {
+      Tags = (
+        <div className="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+      );
+    } else {
+      Tags = (
+        <div style={Style.FormContainer.Form}>
                    <List>
-                   {this.state.tags.map(function (tag) {
-                       return (
-                           <ListItem
-                               leftCheckbox={<Checkbox onClick={function() {
-                                   if (TaskEditor.state.task.tags_ids && TaskEditor.state.task.tags_ids.indexOf(tag.id) >= 0) {
-                                       TaskEditor.excludeTag(tag);
-                                   } else {
-                                       TaskEditor.includeTag(tag);
-                                   }
-                               }}
-                               checked={TaskEditor.state.task.tags_ids && TaskEditor.state.task.tags_ids.indexOf(tag.id) >= 0}
-                               />}
-                               primaryText={tag.name}
-                               key={tag.id}
-                           />
-                        )
-                   })}
+                   {this.state.tags.map(function(tag) {
+          return (
+            <ListItem
+            leftCheckbox={<Checkbox onClick={function() {
+              if (TaskEditor.state.task.tags_ids && TaskEditor.state.task.tags_ids.indexOf(tag.id) >= 0) {
+                TaskEditor.excludeTag(tag);
+              } else {
+                TaskEditor.includeTag(tag);
+              }
+            }}
+            checked={TaskEditor.state.task.tags_ids && TaskEditor.state.task.tags_ids.indexOf(tag.id) >= 0}
+            />}
+            primaryText={tag.name}
+            key={tag.id}
+            />
+          )
+        })}
                    </List>
                </div>
-            );
-        }
+      );
+    }
 
-        var Prereqs;
+    var Prereqs;
 
-        if (this.state.tasks === null) {
-            Prereqs = (
-                <LinearProgress mode="indeterminate"/>
-            );
-        } else {
-            Prereqs = (
-               <div style={Style.FormContainer.Form}>
+    if (this.state.tasks === null) {
+      Prereqs = (
+        <LinearProgress mode="indeterminate"/>
+      );
+    } else {
+      Prereqs = (
+        <div style={Style.FormContainer.Form}>
                    <List>
-                   {this.state.tasks.map(function (task) {
-                       return (
-                           <ListItem
-                               leftCheckbox={<Checkbox onClick={function() {
-                                   if (TaskEditor.state.task.prerequisites_ids && TaskEditor.state.task.prerequisites_ids.indexOf(task.id) >= 0) {
-                                       TaskEditor.excludePrerequisite(task);
-                                   } else {
-                                       TaskEditor.includePrerequisite(task);
-                                   }
-                               }}
-                               checked={TaskEditor.state.task.prerequisites_ids && TaskEditor.state.task.prerequisites_ids.indexOf(task.id) >= 0}
-                               />}
-                               primaryText={task.name}
-                               key={task.id}
-                           />
-                        )
-                   })}
+                   {this.state.tasks.map(function(task) {
+          return (
+            <ListItem
+            leftCheckbox={<Checkbox onClick={function() {
+              if (TaskEditor.state.task.prerequisites_ids && TaskEditor.state.task.prerequisites_ids.indexOf(task.id) >= 0) {
+                TaskEditor.excludePrerequisite(task);
+              } else {
+                TaskEditor.includePrerequisite(task);
+              }
+            }}
+            checked={TaskEditor.state.task.prerequisites_ids && TaskEditor.state.task.prerequisites_ids.indexOf(task.id) >= 0}
+            />}
+            primaryText={task.name}
+            key={task.id}
+            />
+          )
+        })}
                    </List>
                 </div>
-            );
+      );
+    }
+
+
+    var Navigation = {
+      "Basic": {
+        JSX: Basic,
+        Click: function() {
+          TaskEditor.setState({
+            navigation: "Basic",
+          });
+        }
+      },
+      "Tags": {
+        JSX: Tags,
+        Click: function() {
+          TaskEditor.setState({
+            navigation: "Tags",
+          })
+        }
+      },
+      "Prereqs": {
+        JSX: Prereqs,
+        Click: function() {
+          TaskEditor.setState({
+            navigation: "Prereqs",
+          });
+        }
+      },
+    };
+
+    var NavigationKeys = ["Basic", "Tags", "Prereqs"];
+
+    var navigation = this.state.navigation || "Basic";
+
+    var NavigationContent = Navigation[navigation];
+
+    return (
+
+      <Card style={Style.Container} zDepth={1}>
+                    <div>
+                    <CardTitle title={function(task) {
+        if (task === null) {
+          return "";
         }
 
-
-        var Navigation = {
-            "Basic": {
-                JSX: Basic,
-                Click: function () {
-                    TaskEditor.setState({
-                        navigation: "Basic",
-                    });
-                }
-            },
-            "Tags": {
-                JSX: Tags,
-                Click: function () {
-                    TaskEditor.setState({
-                        navigation: "Tags",
-                    })
-                }
-            },
-            "Prereqs": {
-                JSX: Prereqs,
-                Click: function () {
-                    TaskEditor.setState({
-                        navigation: "Prereqs",
-                    });
-                }
-            },
-        };
-
-        var NavigationKeys = ["Basic", "Tags", "Prereqs"];
-
-        var navigation = this.state.navigation || "Basic";
-
-        var NavigationContent = Navigation[navigation];
-
-        return (
-
-                <Card style={Style.Container} zDepth={1}>
-                    <div>
-                    <CardTitle title={function (task) {
-                        if (task === null) {
-                            return "";
-                        }
-
-                        if (!task.id) {
-                            if (task.name && task.name.length > 0) {
-                                return "New Task: \"" + task.name + "\"";
-                            } else {
-                                return "New Task";
-                            }
-                        } else {
-                            if (task.name && task.name.length > 0) {
-                                return "Editing Task: \"" + task.name + "\"";
-                            } else {
-                                return "Editing Task";
-                            }
-                        }
-                     }(this.state.task)}
-                    />
+        if (!task.id) {
+          if (task.name && task.name.length > 0) {
+            return "New Task: \"" + task.name + "\"";
+          } else {
+            return "New Task";
+          }
+        } else {
+          if (task.name && task.name.length > 0) {
+            return "Editing Task: \"" + task.name + "\"";
+          } else {
+            return "Editing Task";
+          }
+        }
+      }(this.state.task)}
+      />
 
                    <div style={Style.FormContainer}>
                         <div style={Style.FormContainer.FormNavigation}>
                             <ul style={Style.FormContainer.FormNavigation.List}>
-                                {NavigationKeys.map(function (key) {
-                                   return (
-                                           <li key={key}
-                                               style={
-                                                   function () {
-                                                       if (navigation === key) {
-                                                           var style = Style.FormContainer.FormNavigation.List.ItemSelected;
-                                                           for (k in Style.FormContainer.FormNavigation.List.Item) {
-                                                               if (!style[k]) {
-                                                                   style[k] = Style.FormContainer.FormNavigation.List.Item[k];
-                                                               }
-                                                           }
-                                                           return style;
-                                                       } else {
-                                                           return Style.FormContainer.FormNavigation.List.Item;
-                                                       }
-                                                   }()
-                                               }
-                                               onClick={Navigation[key].Click}>
+                                {NavigationKeys.map(function(key) {
+        return (
+          <li key={key}
+          style={function() {
+            if (navigation === key) {
+              var style = Style.FormContainer.FormNavigation.List.ItemSelected;
+              for (k in Style.FormContainer.FormNavigation.List.Item) {
+                if (!style[k]) {
+                  style[k] = Style.FormContainer.FormNavigation.List.Item[k];
+                }
+              }
+              return style;
+            } else {
+              return Style.FormContainer.FormNavigation.List.Item;
+            }
+          }()
+          }
+          onClick={Navigation[key].Click}>
                                                {key}
                                            </li> );
-                                })}
+      })}
                             </ul>
                         </div>
                         {NavigationContent.JSX}
@@ -466,40 +473,36 @@ var TaskEditor = React.createClass({
 
                     <CardActions>
                         {function() {
-                            if (TaskEditor.state.task.id && false) {
-                                return (<span>
+        if (TaskEditor.state.task.id && false) {
+          return (<span>
                                     <FlatButton label="Start" onTouchStart={TaskEditor.start}/>
                                     <FlatButton label="Complete" onTouchStart={TaskEditor.complete}/>
                                     <FlatButton label="Make Goal" onTouchStart={TaskEditor.goal}/>
                                 </span>);
-                            } else {
-                                return (<span></span>);
-                            }
-                        }()}
+        } else {
+          return (<span></span>);
+        }
+      }()}
                         <FlatButton label="Save" onClick={TaskEditor.submit} onTouchStart={TaskEditor.submit} />
                     </CardActions>
                 </div>
                 </Card>
-        );
-    },
+      );
+  },
 
-    // --- }}}
+  // --- }}}
 
-    start: function () {
-    },
+  start: function() {},
 
-    stop: function () {
-    },
+  stop: function() {},
 
-    complete: function () {
-    },
+  complete: function() {},
 
-    goal: function () {
-    },
+  goal: function() {},
 
-    /*
-     * Private functions
-     */
+/*
+ * Private functions
+ */
 })
 
 

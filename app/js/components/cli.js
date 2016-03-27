@@ -97,4 +97,5 @@ const CLI = React.createClass({
   }
 })
 
+export default CLI;
 module.exports = CLI;

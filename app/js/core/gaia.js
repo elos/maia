@@ -221,5 +221,5 @@ var Gaia = {
 
 };
 
-
+export default Gaia;
 module.exports = Gaia;

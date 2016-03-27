@@ -219,4 +219,5 @@ var DB = {
 
 };
 
+export default DB;
 module.exports = DB;

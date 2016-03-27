@@ -1,5 +1,8 @@
 var Immutable = require("immutable");
 
 var TaskState = Immutable.Record({
-    loading: true,
+  loading: true,
 });
+
+export default TaskState;
+module.exports = TaskState;

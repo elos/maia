@@ -28,3 +28,10 @@ Maia uses ES6 transpiled to ES5 using Babel. Maia also uses React to manage the 
 
 -----------------
 For original inspiration see: https://github.com/prophittcorey/react-flux-seed
+
+#### Notes
+
+ - `make run` will start a server
+ - `make test` runs tests
+ - If you need to setup, do `make setup`
+ - If some weird dep error occurs try `make reset`

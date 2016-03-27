@@ -20,8 +20,12 @@
     "object-assign": "^4.0.1",
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
+    "react-redux": "^4.4.1",
+    "react-router": "^2.0.1",
+    "react-router-redux": "^4.0.0",
     "react-tap-event-plugin": "^0.2.1",
     "reactify": "^1.1.1",
+    "redux": "^3.3.1",
     "vinyl-source-stream": "^1.1.0",
     "yargs": "^3.29.0"
   },

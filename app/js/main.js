@@ -29,8 +29,8 @@ Dispatcher.dispatch({
 });
 
 DB.changes({
-  error: function() {
-    console.log("yikes");
+  error: function(e) {
+    console.log("yikes", e);
   },
   resolve: function(recordChange) {
     switch (recordChange.change_kind) {
@@ -44,10 +44,13 @@ DB.changes({
   },
 });
 
-/*
- * Initialize React Below
- */
 ReactDOM.render(
   <Root />,
   document.getElementById("react-app")
+)
+
+import App from "./app";
+ReactDOM.render(
+  <App />,
+  document.getElementById("react-root")
 )

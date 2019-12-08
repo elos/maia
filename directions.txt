@@ -1,0 +1,2 @@
+- watchify for dev builds
+- use redux to manage app state
